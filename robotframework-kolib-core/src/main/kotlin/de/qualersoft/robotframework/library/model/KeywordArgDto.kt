@@ -93,7 +93,7 @@ class KeywordArgDto(private val kParameter: KParameter) {
     return "$name $type" + if (null != default) "=$default" else "" + if (null != argAnnotation && argAnnotation.doc.isNotBlank()) ": " + argAnnotation.doc else ""
   }
 
-  private fun isDefault() = (null != argAnnotation && argAnnotation.optional || kParameter.isOptional)
+  private fun isDefault() = argAnnotation?.optional ?: kParameter.isOptional
 
   /**
    * We cannot determine the default value at runtime therefore it must be set

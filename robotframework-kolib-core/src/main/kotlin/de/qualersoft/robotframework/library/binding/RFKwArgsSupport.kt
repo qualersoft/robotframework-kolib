@@ -1,5 +1,8 @@
 package de.qualersoft.robotframework.library.binding
 
+/**
+ *
+ */
 interface RFKwArgsSupport {
 
   /**

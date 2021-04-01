@@ -1,7 +1,14 @@
 package de.qualersoft.robotframework.library.binding
 
 /**
- * Interface for [https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#getting-keyword-arguments]
+ * Interface for
+ * [getting-keyword-arguments](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#getting-keyword-arguments)
+ *
+ * If a library only implements [MinimalDynamicLibrary] Robot Framework does not
+ * have any information about the arguments that the implemented keywords accept.
+ * This is problematic, because most real keywords expect a certain number of
+ * keywords, and under these circumstances they would need to check the argument
+ * counts themselves.
  */
 interface RFArgumentSpecSupport {
 

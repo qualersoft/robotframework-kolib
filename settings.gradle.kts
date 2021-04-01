@@ -3,7 +3,6 @@ pluginManagement {
   repositories {
     gradlePluginPortal()
     jcenter()
-    mavenLocal()
     mavenCentral()
   }
   plugins {
@@ -12,7 +11,12 @@ pluginManagement {
 
     id("io.spring.dependency-management") version "1.0.10.RELEASE"
 
+    // quality
+    id("org.sonarqube") version "3.1.1"
+
+    // documentation
     id("org.jetbrains.dokka") version "1.4.10.2"
+    id("org.asciidoctor.jvm.convert") version "3.3.2"
   }
 }
 

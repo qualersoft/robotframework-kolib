@@ -10,6 +10,7 @@ plugins {
 
 dependencies {
   api(project(":robotframework-kolib-core"))
+
   //add groovy to allow spring bean definition in groovy-style
   compileOnly(group = "org.codehaus.groovy", name = "groovy")
 
