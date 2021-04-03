@@ -6,31 +6,18 @@ import de.qualersoft.robotframework.library.model.KeywordArgDto
 import de.qualersoft.robotframework.library.model.KeywordDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.context.annotation.AnnotatedBeanDefinitionReader
-import org.springframework.context.annotation.ClassPathBeanDefinitionScanner
-import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.support.GenericApplicationContext
+import org.springframework.context.ConfigurableApplicationContext
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
-import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.memberFunctions
 import kotlin.reflect.jvm.isAccessible
 
 open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrary, RFKwArgsSupport,
   RFArgumentSpecSupport, RFArgumentTypesSupport, RfLibdocSupport {
 
-  object KwdClass {
-    val KCLASS = Keyword::class
-
-    /**
-     * Full qualified java name
-     */
-    val FQJN: String = KCLASS.java.name
-  }
-
   private val log: Logger = LoggerFactory.getLogger(javaClass)
-  private val ctx: GenericApplicationContext
+  private val ctx: ConfigurableApplicationContext
 
   // backing property
   private var _kwdBeans: List<KClass<*>>? = null
@@ -52,29 +39,10 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
       return _kwdList!!
     }
 
-  init {
-    log.debug("Initializing ${this::class.simpleName} for ${root.simpleName}")
-    ctx = GenericApplicationContext()
-    val scanner = ClassPathBeanDefinitionScanner(ctx)
-    scanner.addIncludeFilter { metadataReader, _ ->
-      metadataReader.classMetadata.isConcrete &&
-          metadataReader.annotationMetadata.hasAnnotatedMethods(KwdClass.FQJN)
-    }
 
-    if(root.hasAnnotation<ComponentScan>()) {
-      val toScan = root.annotations.filter { it is ComponentScan }.map { it as ComponentScan }.flatMap {
-        mutableListOf<String>().apply {
-          addAll(it.basePackageClasses.map { it.java.packageName })
-          addAll(it.basePackages)
-        }
-      }
-      scanner.scan(*toScan.toTypedArray())
-    } else {
-      scanner.scan(root.java.packageName)
-    }
-    // TODO limit scan to provided root-package and make app.run working
-    ctx.registerShutdownHook()
-    ctx.refresh()
+  init {
+    log.debug("Initializing ${this::class.simpleName} with ${root.simpleName}")
+    ctx = LibraryContext(*args, root = root).ctx
     log.debug("${this::class} initialized ${root.simpleName}")
   }
 
@@ -82,9 +50,8 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
     return keyWords.keys.toList()
   }
 
-  final override fun runKeyword(name: String, args: List<Any?>): Any? {
-    TODO("if kwargs variant exists this should not be called")
-  }
+  // not called because we also implement the kwdarg version
+  final override fun runKeyword(name: String, args: List<Any?>): Any? = null
 
   final override fun runKeyword(name: String, args: List<Any?>, kwArgs: Map<String, Any?>): Any? {
     log.debug("Running keyword $name with args $args and kwArgs $kwArgs")
@@ -177,5 +144,9 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
       else -> type.constructors.single { it.isAccessible && it.parameters.size == 1 && it.parameters[0].type.classifier == String::class }
         .call(value)
     }
+  }
+
+  object KwdClass {
+    val KCLASS = Keyword::class
   }
 }

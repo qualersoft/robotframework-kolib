@@ -18,7 +18,7 @@ plugins {
 
 allprojects {
 
-  group = "de.qualersoft"
+  group = "de.qualersoft.robotframework"
   version = "0.0.1-SNAPSHOT"
 
   repositories {
@@ -52,8 +52,8 @@ subprojects {
 
       dependency(group = "org.robotframework", name = "robotframework", version = "3.2.2")
 
-      dependencySet(group = "org.springframework", version = "5.3.2") {
-        entry("spring-context")
+      dependencySet(group = "org.springframework.boot", version = "2.4.4") {
+        entry("spring-boot-starter")
       }
 
       //add groovy to allow spring bean definition in groovy-style

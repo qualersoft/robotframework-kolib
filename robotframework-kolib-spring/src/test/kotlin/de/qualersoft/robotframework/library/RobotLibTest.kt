@@ -10,28 +10,29 @@ import io.kotest.matchers.string.shouldStartWith
 import io.kotest.matchers.string.shouldBeEmpty
 import org.junit.jupiter.api.assertAll
 import org.springframework.context.annotation.ComponentScan
+import javax.annotation.ManagedBean
 
 @ComponentScan(basePackageClasses = [RobotLibTest::class])
 class RobotLibTest : FreeSpec({
   "Get Keyword names" - {
     "from annotation" {
-      val origin = getKwdNames()
+      val origin = getLibTestKwdNames()
       origin shouldContain "publicKeywordWithNameFromAnnotation"
     }
     "from function" {
-      val origin = getKwdNames()
+      val origin = getLibTestKwdNames()
       origin shouldContain "publicKeywordFromFunction"
     }
     "from protected methods are not considered" {
-      val origin = getKwdNames()
+      val origin = getLibTestKwdNames()
       origin shouldNotContainAnyOf listOf("iAmProtected", "iAmProtectedKwd")
     }
     "from private methods are not considered" {
-      val origin = getKwdNames()
+      val origin = getLibTestKwdNames()
       origin shouldNotContainAnyOf listOf("iAmPrivate", "iAmNotAlsoNotAvailable", "alsoNotIn")
     }
     "unannotated methods are not considered" {
-      val origin = getKwdNames()
+      val origin = getLibTestKwdNames()
       origin shouldNotContainAnyOf listOf("notAKeyWord", "publicFunNotIn", "iAmProtected", "alsoNotIn")
     }
   }
@@ -113,12 +114,18 @@ class RobotLibTest : FreeSpec({
       }
     }
   }
-})
 
-fun getKwdNames() = RobotLib(root = RobotLibTest::class).getKeywordNames()
+  "Getting from subpackage also work" {
+    val origin = getLibTestKwdNames()
+    origin shouldContain "subpackageFunction"
+  }
+})
+fun getLibTestKwdNames() = RobotLib(root = RobotLibTest::class).getKeywordNames()
+
 
 //<editor-fold desc="keyword discovery test classes">
 @Suppress("unused")
+@ManagedBean
 open class KwdNameClass {
   @Keyword(name = "publicKeywordWithNameFromAnnotation")
   fun publicKeywordWithName() {
@@ -128,6 +135,7 @@ open class KwdNameClass {
 }
 
 @Suppress("unused")
+@ManagedBean
 open class KwdFunctionNameClass {
   @Keyword
   fun publicKeywordFromFunction() {
@@ -135,6 +143,7 @@ open class KwdFunctionNameClass {
 }
 
 @Suppress("unused")
+@ManagedBean
 open class ProtectedStuff {
   protected fun iAmProtected() {}
 
@@ -144,6 +153,7 @@ open class ProtectedStuff {
 }
 
 @Suppress("unused")
+@ManagedBean
 open class PrivateStuff {
   private fun iAmPrivate() {}
 
@@ -153,6 +163,7 @@ open class PrivateStuff {
 }
 
 @Suppress("unused")
+@ManagedBean
 open class NoBeanAtAll {
   private fun alsoNotIn() {}
   fun publicFunNotIn() {}
@@ -160,6 +171,7 @@ open class NoBeanAtAll {
 //</editor-fold>
 
 @Suppress("unused", "unused_parameter")
+@ManagedBean
 open class KeywordArgs {
   @Keyword
   fun withAnnotatedArgsNoReturn(
@@ -197,6 +209,7 @@ open class KeywordArgs {
 }
 
 @Suppress("unused")
+@ManagedBean
 open class KeywordDocumentation {
 
   @Keyword(docSummary = ["Just a single line"])
