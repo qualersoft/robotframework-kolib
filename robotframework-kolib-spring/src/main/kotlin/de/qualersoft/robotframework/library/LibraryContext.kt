@@ -16,6 +16,7 @@ class LibraryContext(vararg args: String, root: KClass<*>) {
     val app = SpringApplication(root.java)
     registerRootIfRequired(root, app)
 
+    @SuppressWarnings("SpreadOperator")
     ctx = app.run(*args)
     ctx.registerShutdownHook()
     logger.debug("${this::class} initialized ${root.simpleName}")

@@ -61,10 +61,10 @@ class KeywordArgDto(private val kParameter: KParameter) {
 
   fun toArgumentTuple(): List<Any?> {
     val resName = when (kind) {
-      ParamKind.VALUE -> ""
-      ParamKind.VARARG -> "*"
-      ParamKind.KWARG -> "**"
-    } + name
+                    ParamKind.VALUE -> ""
+                    ParamKind.VARARG -> "*"
+                    ParamKind.KWARG -> "**"
+                  } + name
 
     return if (isDefault()) {
       val default = getDefault()
@@ -90,7 +90,17 @@ class KeywordArgDto(private val kParameter: KParameter) {
     val type = detectType().simpleName
     val default = getDefault()
 
-    return "$name $type" + if (null != default) "=$default" else "" + if (null != argAnnotation && argAnnotation.doc.isNotBlank()) ": " + argAnnotation.doc else ""
+    return "$name $type" +
+           if (null != default) {
+             "=$default"
+           } else {
+             ""
+           } +
+           if (null != argAnnotation && argAnnotation.doc.isNotBlank()) {
+             ": " + argAnnotation.doc
+           } else {
+             ""
+           }
   }
 
   private fun isDefault() = argAnnotation?.optional ?: kParameter.isOptional

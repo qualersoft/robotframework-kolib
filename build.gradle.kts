@@ -1,7 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
+import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.spring.gradle.dependencymanagement.dsl.DependencySetHandler
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   base
@@ -10,13 +10,22 @@ plugins {
   kotlin("plugin.spring") apply false
   id("org.jetbrains.dokka") apply false
 
-  id("io.spring.dependency-management") apply false
+  id("org.springframework.boot") apply false
+  id("io.spring.dependency-management")
+
+  id("io.gitlab.arturbosch.detekt") apply false
+  jacoco
+  id("org.sonarqube")
 
   `java-library`
   `maven-publish`
+
+  id("com.github.ben-manes.versions") version "0.38.0"
 }
 
 allprojects {
+  apply(plugin = "idea")
+  apply(plugin = "io.spring.dependency-management")
 
   group = "de.qualersoft.robotframework"
   version = "0.0.1-SNAPSHOT"
@@ -26,16 +35,8 @@ allprojects {
     mavenLocal()
     jcenter()
   }
-}
 
-subprojects {
-  apply(plugin = "org.jetbrains.kotlin.jvm")
-  apply(plugin = "org.jetbrains.kotlin.plugin.spring")
-  apply(plugin = "io.spring.dependency-management")
-  apply(plugin = "org.jetbrains.dokka")
-  apply(plugin = "maven-publish")
-
-  the<DependencyManagementExtension>().apply {
+  dependencyManagement {
     dependencies {
       fun dependency(group: String, name: String, version: String) = this.dependency(
         mapOf("group" to group, "name" to name, "version" to version)
@@ -44,13 +45,15 @@ subprojects {
       fun dependencySet(group: String, version: String, action: ((DependencySetHandler).() -> Unit)) =
         dependencySet(mapOf("group" to group, "version" to version), action)
 
-      dependencySet(group = "io.kotest", version = "4.3.2") {
+      dependencySet(group = "io.kotest", version = "4.4.3") {
         entry("kotest-runner-junit5-jvm")
         entry("kotest-assertions-core-jvm")
         entry("kotest-property-jvm")
       }
 
       dependency(group = "org.robotframework", name = "robotframework", version = "3.2.2")
+
+      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
 
       dependencySet(group = "org.springframework.boot", version = "2.4.4") {
         entry("spring-boot-starter")
@@ -60,10 +63,33 @@ subprojects {
       dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.7")
     }
   }
+}
+
+subprojects {
+  apply(plugin = "org.jetbrains.kotlin.jvm")
+  apply(plugin = "org.jetbrains.kotlin.plugin.spring")
+
+  apply(plugin = "jacoco")
+  apply(plugin = "io.gitlab.arturbosch.detekt")
+
+  apply(plugin = "org.jetbrains.dokka")
+
+  apply(plugin = "maven-publish")
 
   dependencies {
+    implementation(group = "ch.qos.logback", name = "logback-classic")
+  }
 
-    implementation(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
+  configure<DetektExtension> {
+    failFast = true
+    config = files("$rootDir/detekt.yml")
+    input = files("src/main/kotlin")
+
+    reports {
+      html.enabled = true
+      xml.enabled = true
+      txt.enabled = false
+    }
   }
 
   tasks.withType<Test> {
@@ -99,6 +125,18 @@ subprojects {
           "Implementation-Version" to project.version
         )
       )
+    }
+  }
+
+  tasks.check {
+    dependsOn(tasks.withType<JacocoReport>())
+  }
+
+  tasks.withType<JacocoReport> {
+    reports {
+      xml.isEnabled = true
+      html.isEnabled = true
+      csv.isEnabled = false
     }
   }
 

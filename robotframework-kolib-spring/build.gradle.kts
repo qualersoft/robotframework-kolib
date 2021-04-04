@@ -17,7 +17,6 @@ dependencies {
   implementation(kotlin("reflect"))
 
   api(group = "org.springframework.boot", name = "spring-boot-starter")
-  //api(group = "org.yaml", name = "snakeyaml", version = "1.27")
 
   listOf("kotest-runner-junit5-jvm", "kotest-assertions-core").forEach {
     testImplementation(group = "io.kotest", name = it)

@@ -1,7 +1,11 @@
 package de.qualersoft.robotframework.library
 
 import de.qualersoft.robotframework.library.annotation.Keyword
-import de.qualersoft.robotframework.library.binding.*
+import de.qualersoft.robotframework.library.binding.MinimalDynamicLibrary
+import de.qualersoft.robotframework.library.binding.RFArgumentSpecSupport
+import de.qualersoft.robotframework.library.binding.RFArgumentTypesSupport
+import de.qualersoft.robotframework.library.binding.RFKwArgsSupport
+import de.qualersoft.robotframework.library.binding.RfLibdocSupport
 import de.qualersoft.robotframework.library.model.KeywordArgDto
 import de.qualersoft.robotframework.library.model.KeywordDto
 import org.slf4j.Logger
@@ -19,29 +23,13 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
   private val log: Logger = LoggerFactory.getLogger(javaClass)
   private val ctx: ConfigurableApplicationContext
 
-  // backing property
-  private var _kwdBeans: List<KClass<*>>? = null
-  private val kwdBeans: List<KClass<*>>
-    get() {
-      if (null == _kwdBeans) {
-        _kwdBeans = findKeywordBeans()
-      }
-      return _kwdBeans!!
-    }
+  private val kwdBeans: List<KClass<*>> by lazy { findKeywordBeans() }
 
-  // backing property
-  private var _kwdList: Map<String, KeywordDto>? = null
-  private val keyWords: Map<String, KeywordDto>
-    get() {
-      if (null == _kwdList) {
-        _kwdList = findKeywordFunctions()
-      }
-      return _kwdList!!
-    }
-
+  private val keyWords: Map<String, KeywordDto> by lazy { findKeywordFunctions() }
 
   init {
     log.debug("Initializing ${this::class.simpleName} with ${root.simpleName}")
+    @SuppressWarnings("SpreadOperator")
     ctx = LibraryContext(*args, root = root).ctx
     log.debug("${this::class} initialized ${root.simpleName}")
   }
@@ -53,6 +41,7 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
   // not called because we also implement the kwdarg version
   final override fun runKeyword(name: String, args: List<Any?>): Any? = null
 
+  @SuppressWarnings("SpreadOperator")
   final override fun runKeyword(name: String, args: List<Any?>, kwArgs: Map<String, Any?>): Any? {
     log.debug("Running keyword $name with args $args and kwArgs $kwArgs")
     val kwd = keyWords.getValue(name)
@@ -77,14 +66,28 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
     return argTypes
   }
 
+  /**
+   * Remarks:
+   *
+   * `__intro__` and `__init__` are automatically redirect to [getLibraryGeneralDocumentation] and
+   * [getLibraryUsageDocumentation] respectively.
+   */
   final override fun getKeywordDocumentation(name: String): String = when (name) {
     "__intro__" -> getLibraryGeneralDocumentation()
     "__init__" -> getLibraryUsageDocumentation()
     else -> keyWords.getValue(name).description
   }
 
+  /**
+   * Meant to be overwritten. Default impl returns empty string
+   */
+  @SuppressWarnings("FunctionOnlyReturningConstant")
   protected fun getLibraryGeneralDocumentation(): String = ""
 
+  /**
+   * Meant to be overwritten. Default impl returns empty string
+   */
+  @SuppressWarnings("FunctionOnlyReturningConstant")
   protected fun getLibraryUsageDocumentation(): String = ""
 
   private fun findKeywordBeans(): List<KClass<*>> = ctx.beanDefinitionNames.mapNotNull {
@@ -122,7 +125,7 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
         else -> { // everything here must be an optional argument
           val default = if (kwdArg.nullable && null == kwdArg.argAnnotation) null else kwdArg.argAnnotation!!.default
           res[idx] = if (kwdArg.nullable &&
-            (("\u0000" == default) || (null == default))
+                         (("\u0000" == default) || (null == default))
           ) {
             null
           } else convertDefaultToType(kwdArg.type, default!!)
@@ -141,8 +144,11 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
       Float::class -> value.toFloat()
       Double::class -> value.toDouble()
       String::class -> value
-      else -> type.constructors.single { it.isAccessible && it.parameters.size == 1 && it.parameters[0].type.classifier == String::class }
-        .call(value)
+      else -> type.constructors.single {
+        it.isAccessible &&
+        it.parameters.size == 1 &&
+        it.parameters[0].type.classifier == String::class
+      }.call(value)
     }
   }
 

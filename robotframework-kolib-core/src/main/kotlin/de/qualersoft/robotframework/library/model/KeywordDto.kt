@@ -14,8 +14,11 @@ class KeywordDto(private val function: KFunction<*>) {
   val name: String
     get() {
       return kwdAnnotation.name.let {
-        if (it.isNotBlank()) it
-        else function.name
+        if (it.isNotBlank()) {
+          it
+        } else {
+          function.name
+        }
       }
     }
   val description: String = """${normalizeSummary(kwdAnnotation.docSummary)}
@@ -33,7 +36,7 @@ class KeywordDto(private val function: KFunction<*>) {
   }
 
   private fun normalizeSummary(summary: Array<String>): String {
-     return summary.map { it.trim() }.filter { it.isNotEmpty() }.joinToString( " ")
+    return summary.map { it.trim() }.filter { it.isNotEmpty() }.joinToString(" ")
   }
 
   private fun createArgDoc() =
