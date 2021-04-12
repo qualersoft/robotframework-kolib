@@ -21,4 +21,9 @@ dependencies {
   listOf("kotest-runner-junit5-jvm", "kotest-assertions-core").forEach {
     testImplementation(group = "io.kotest", name = it)
   }
+
+  testImplementation(group= "io.github.classgraph", name="classgraph", version="4.8.102")
+
+  testImplementation(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
+  testImplementation(group = "org.robotframework", name = "robotframework", version = "3.2.2")
 }

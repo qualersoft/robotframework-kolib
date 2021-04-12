@@ -6,8 +6,7 @@ import de.qualersoft.robotframework.library.binding.RFArgumentSpecSupport
 import de.qualersoft.robotframework.library.binding.RFArgumentTypesSupport
 import de.qualersoft.robotframework.library.binding.RFKwArgsSupport
 import de.qualersoft.robotframework.library.binding.RfLibdocSupport
-import de.qualersoft.robotframework.library.model.KeywordArgDto
-import de.qualersoft.robotframework.library.model.KeywordDto
+import de.qualersoft.robotframework.library.model.KeywordDescriptor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ConfigurableApplicationContext
@@ -25,7 +24,7 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
 
   private val kwdBeans: List<KClass<*>> by lazy { findKeywordBeans() }
 
-  private val keyWords: Map<String, KeywordDto> by lazy { findKeywordFunctions() }
+  private val keyWords: Map<String, KeywordDescriptor> by lazy { findKeywordFunctions() }
 
   init {
     log.debug("Initializing ${this::class.simpleName} with ${root.simpleName}")
@@ -46,22 +45,21 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
     log.debug("Running keyword $name with args $args and kwArgs $kwArgs")
     val kwd = keyWords.getValue(name)
 
-    val obj = ctx.getBean(kwd.declaringClass)
-    val cArgs = mutableListOf<Any?>(obj)
-    cArgs.addAll(prepareArguments(kwd, args, kwArgs))
-    return kwd.method.call(*cArgs.toTypedArray())
+    val obj = ctx.getBean(kwd.declaringClass.java)
+
+    return kwd.invoke(obj, args, kwArgs)
   }
 
   final override fun getKeywordArguments(name: String): List<List<Any?>> {
     val kwd = keyWords.getValue(name)
-    val kwdArgs = kwd.arguments.map { it.toArgumentTuple() }
+    val kwdArgs = kwd.robotArguments
     log.debug("Calculated arguments for keyword '$name' are $kwdArgs")
     return kwdArgs
   }
 
-  final override fun getKeywordTypes(name: String): Map<String, KClass<*>> {
+  final override fun getKeywordTypes(name: String): Map<String, Any> {
     val kwd = keyWords.getValue(name)
-    val argTypes = kwd.arguments.map { it.name to it.type }.toMap()
+    val argTypes = kwd.robotArgumentTypes
     log.debug("Calculated argument types for keyword '$name' are $argTypes")
     return argTypes
   }
@@ -99,41 +97,18 @@ open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrar
     clz.memberFunctions.any { it.isAnnotationPresent(KwdClass.KCLASS) && it.visibility == KVisibility.PUBLIC }
   }
 
-  private fun findKeywordFunctions(): Map<String, KeywordDto> = kwdBeans.flatMap {
+  private fun findKeywordFunctions(): Map<String, KeywordDescriptor> = kwdBeans.flatMap {
     it.memberFunctions.toList()
   }.filter {
     it.isAnnotationPresent(KwdClass.KCLASS)
   }.map {
-    val dto = KeywordDto(it)
+    val dto = KeywordDescriptor(it)
     dto.name to dto
   }.toMap()
 
   private fun KFunction<*>.isAnnotationPresent(clazz: KClass<out Annotation>): Boolean =
     this.annotations.any { it.annotationClass == clazz }
 
-  private fun prepareArguments(kwd: KeywordDto, args: List<Any?>, kwArgs: Map<String, Any?>): List<Any?> {
-    val definedArgs = kwd.arguments
-    val res = Array<Any?>(definedArgs.size) { null }
-    definedArgs.forEachIndexed { idx, kwdArg ->
-      when {
-        idx < args.size -> {
-          res[idx] = args[idx]
-        }
-        kwdArg.kind == KeywordArgDto.ParamKind.KWARG -> {
-          res[idx] = kwArgs
-        }
-        else -> { // everything here must be an optional argument
-          val default = if (kwdArg.nullable && null == kwdArg.argAnnotation) null else kwdArg.argAnnotation!!.default
-          res[idx] = if (kwdArg.nullable &&
-                         (("\u0000" == default) || (null == default))
-          ) {
-            null
-          } else convertDefaultToType(kwdArg.type, default!!)
-        }
-      }
-    }
-    return res.toList()
-  }
 
   private fun convertDefaultToType(type: KClass<*>, value: String): Any {
     return when (type) {

@@ -1,10 +1,10 @@
 *** Settings ***
 Documentation    Test suite for dynamic keyword resulution
+Library    de.qualersoft.robotframework.functioncall.DynamicTestLib
 
 *** Test Cases ***                                  # args, kwargs
-Named-only only
-    Dynamic    named=value                          # [], {named: value}
-    Dynamic    named=value    named2=2              # [], {named: value, named2: 2}
+OneArgOnly
+    Plain arg   test name
 
 Named-only with positional and varargs
     Dynamic    argument       named=xxx             # [argument], {named: xxx}
