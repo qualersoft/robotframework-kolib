@@ -25,5 +25,5 @@ interface RFArgumentTypesSupport {
    *
    * @since RF 3.1
    */
-  fun getKeywordTypes(name: String): Map<String, KClass<*>>
+  fun getKeywordTypes(name: String): Map<String, Any>
 }
