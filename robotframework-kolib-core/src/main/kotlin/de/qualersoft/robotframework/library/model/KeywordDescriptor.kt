@@ -39,9 +39,8 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
 
   val description: String by lazy {
     """${normalizeSummary(annotation.docSummary)}
-    |
-    |${annotation.docDetails.joinToString(System.lineSeparator())}
-    |${createParameterDoc()}""".trimMargin().trim()
+    ${createDetailsDescription(annotation.docDetails)}
+    ${createParameterDoc()}""".trim()
   }
 
   init {
@@ -384,14 +383,28 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
   }
 
   private fun normalizeSummary(summary: Array<String>): String {
-    return summary.map { it.trim() }.filter { it.isNotEmpty() }.joinToString(" ")
+    return summary.map { it.trim() }.filter { it.isNotEmpty() }.joinToString(" ").let {
+      if (it.isNotBlank()) {
+        "*Summary*:\n\n$it\n"
+      } else {
+        ""
+      }
+    }
+  }
+
+  private fun createDetailsDescription(details: Array<String>): String {
+    return if (details.isNotEmpty()) {
+      details.joinToString("\n", prefix = "\n*Details*:\n\n") { it.trim() }
+    } else {
+      ""
+    }
   }
 
   private fun createParameterDoc() =
     if (parameters.isNotEmpty()) {
       val sep = System.lineSeparator()
-      "${sep}Parameters:${sep}" + parameters.joinToString(
-        sep
+      "$sep*Parameters*:$sep" + parameters.joinToString(
+        "$sep- ", prefix = "- "
       ) { it.documentation }
     } else {
       ""
