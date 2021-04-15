@@ -2,6 +2,7 @@ package de.qualersoft.robotframework.library
 
 import de.qualersoft.robotframework.library.annotation.Keyword
 import de.qualersoft.robotframework.library.annotation.KwdArg
+import de.qualersoft.robotframework.library.model.ParameterKind
 import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.*
 import io.kotest.matchers.shouldBe
@@ -38,21 +39,9 @@ class RobotLibTest : FreeSpec({
   }
   "When getting Arguments" - {
     val sut = RobotLib(root = RobotLibTest::class)
-    "annotations win" {
-      val args = sut.getKeywordArguments("withAnnotatedArgsNoReturn")
-      args shouldContainAll listOf(listOf("firstArg"), listOf("snd"))
-    }
     "also not annotated args work" {
       val args = sut.getKeywordArguments("notAnnotated")
       args shouldContainAll listOf(listOf("first"), listOf("second"))
-    }
-    "defaults will be retrieved" {
-      val args = sut.getKeywordArguments("withDefaultValues")
-      assertAll(
-        { args shouldHaveSize 2 },
-        { args[0] shouldContainExactly listOf("first", "A") },
-        { args[1] shouldContainExactly listOf("second", "5") }
-      )
     }
     "unannotated args with default on non nullable type will be mapped to required" {
       val args = sut.getKeywordArguments("withUnannotatedNotNullableDefault")
@@ -175,8 +164,8 @@ open class NoBeanAtAll {
 open class KeywordArgs {
   @Keyword
   fun withAnnotatedArgsNoReturn(
-    @KwdArg(name = "firstArg") first: String,
-    @KwdArg(name = "snd") second: Int
+    @KwdArg first: String,
+    @KwdArg second: Int
   ) {
   }
 
@@ -186,8 +175,8 @@ open class KeywordArgs {
 
   @Keyword
   fun withDefaultValues(
-    @KwdArg(name = "first", default = "A", optional = true, type = String::class) f: String = "A",
-    @KwdArg(name = "second", default = "5", optional = true, type = Int::class) s: Int = 5
+    @KwdArg(default = "A", type = String::class) first: String = "A",
+    @KwdArg(default = "5", type = Int::class) second: Int = 5
   ) {
   }
 
@@ -204,7 +193,7 @@ open class KeywordArgs {
   }
 
   @Keyword
-  fun withVarArg(@KwdArg vararg variable: String) {
+  fun withVarArg(@KwdArg(kind=ParameterKind.VARARG) variable: List<String>?) {
   }
 }
 

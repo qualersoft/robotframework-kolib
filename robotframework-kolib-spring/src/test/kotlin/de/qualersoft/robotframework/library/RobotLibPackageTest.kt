@@ -20,6 +20,5 @@ class RobotLibPackageTest  : FreeSpec({
   }
 })
 
-
 fun getPckgKwdNames() = RobotLib(root = DummyMarker::class).getKeywordNames()
 fun execPckgKwd(name: String) = RobotLib(root=DummyMarker::class).runKeyword(name, emptyList(), emptyMap())
