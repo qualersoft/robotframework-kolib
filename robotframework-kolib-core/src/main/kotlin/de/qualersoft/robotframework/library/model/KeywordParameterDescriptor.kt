@@ -1,13 +1,23 @@
 package de.qualersoft.robotframework.library.model
 
 import de.qualersoft.robotframework.library.annotation.KwdArg
+import de.qualersoft.robotframework.library.conversion.EnumConverter
+import de.qualersoft.robotframework.library.conversion.NumberConverter
+import de.qualersoft.robotframework.library.conversion.TemporalConverter
+import java.time.temporal.Temporal
+import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
+import kotlin.reflect.KVisibility
 import kotlin.reflect.cast
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.full.isSuperclassOf
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.safeCast
 
 class KeywordParameterDescriptor(val param: KParameter) {
+
 
   val annotation = (param.annotations.firstOrNull { it is KwdArg } ?: KwdArg::class.createInstance()) as KwdArg
 
@@ -56,10 +66,10 @@ class KeywordParameterDescriptor(val param: KParameter) {
                     ParameterKind.VARARG -> "*"
                     ParameterKind.KWARG -> "**"
                   } + name
-    val res = mutableListOf<Any>(argName)
+    val res = mutableListOf<Any?>(argName)
     // VARARG & KWARG is automatically assumed optional by RF
     if (optional && kind == ParameterKind.VALUE) {
-      res.add(type.cast(null))
+      res.add(null)
     }
     return@lazy res
   }
@@ -82,10 +92,13 @@ class KeywordParameterDescriptor(val param: KParameter) {
           "subclass of List!"
         )
       }
-    } else if (ParameterKind.KWARG == kind && !(
+    } else if (
+      ParameterKind.KWARG == kind &&
+      !(
           type.isSubclassOf(Map::class) &&
           String::class == (_type.arguments.first().type!!.classifier as KClass<*>)
-      )) {
+       )
+    ) {
       throw IllegalArgumentException(
         "The parameter $name is marked as kwarg but it's type is not a " +
         "subclass of Map or its key-type parameter is not String"
@@ -112,5 +125,62 @@ class KeywordParameterDescriptor(val param: KParameter) {
     } else {
       annotation.default
     }
+  }
+
+  fun convertToTargetType(rawVal: Optional<Any>): Any? {
+    val argClassType = _type.classifier as KClass<*>
+    return when {
+      rawVal.isEmpty -> {
+        argClassType.safeCast(null)
+      }
+      else -> {
+        convertToType(argClassType, rawVal.get())
+      }
+    }
+  }
+
+  private fun convertToType(type: KClass<*>, value: Any): Any {
+    // if type already match or is compatible return
+    return if (type == value::class || type.isSuperclassOf(value::class)) {
+      value
+    } else {
+      // else convert
+      when (type) {
+        Boolean::class -> {
+          type.cast(value)
+        }
+        isClassOf(type, Number::class) -> {
+          NumberConverter.convertToNumber(type, value)
+        }
+        ByteArray::class -> {
+          (value as Collection<*>).map { NumberConverter.convertToNumber(Byte::class, it!!) as Byte }.toByteArray()
+        }
+        isClassOf(type, Collection::class) -> {
+          value as Collection<*>
+        }
+        isClassOf(type, Temporal::class), isClassOf(type, Date::class) -> {
+          TemporalConverter.convertToTemporal(type, value)
+        }
+        String::class -> {
+          value.toString()
+        }
+        isClassOf(type, Enum::class) -> {
+          EnumConverter.convertToEnum(type, value)
+        }
+        // last hope we find a constructor in target type that match the value type
+        else -> type.constructors.single {
+          it.isAccessible &&
+          it.visibility == KVisibility.PUBLIC &&
+          it.parameters.size == 1 &&
+          (it.parameters[0].type.classifier as KClass<*>).isSuperclassOf(value::class)
+        }.call(value)
+      }
+    }
+  }
+
+  private fun isClassOf(derived: KClass<*>, base: KClass<*>): KClass<*> = if (base.isSuperclassOf(derived)) {
+    derived
+  } else {
+    Nothing::class
   }
 }

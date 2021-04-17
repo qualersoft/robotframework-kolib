@@ -1,26 +1,16 @@
 package de.qualersoft.robotframework.library.model
 
 import de.qualersoft.robotframework.library.annotation.Keyword
-import org.slf4j.LoggerFactory
 import java.time.Duration
-import java.time.LocalDateTime
-import java.time.OffsetDateTime
 import java.time.temporal.Temporal
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KVisibility
-import kotlin.reflect.cast
-import kotlin.reflect.full.extensionReceiverParameter
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.isSubclassOf
-import kotlin.reflect.full.isSuperclassOf
-import kotlin.reflect.full.isSupertypeOf
-import kotlin.reflect.full.superclasses
 import kotlin.reflect.full.valueParameters
-import kotlin.reflect.jvm.isAccessible
-import kotlin.reflect.safeCast
 
 open class KeywordDescriptor(private val function: KFunction<*>) {
 
@@ -65,7 +55,7 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
   private fun toRobotType(originType: KClass<*>): Any {
     val result = when {
       originType.isSubclassOf(Number::class) -> {
-        determineNumberType(originType as KClass<Number>)
+        determineNumberType(originType)
       }
       originType == Boolean::class -> {
         "bool"
@@ -82,15 +72,12 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
       originType == ByteArray::class -> {
         "bytearray"
       }
-      originType.isSubclassOf(Enum::class) -> {
-        originType.superclasses.first { it.isSubclassOf(Enum::class) }
-      }
       else -> originType
     }
     return result
   }
 
-  private fun <T : Number> determineNumberType(type: KClass<T>): Any {
+  private fun determineNumberType(type: KClass<*>): Any {
     return when (type) {
       Byte::class, Short::class, Int::class, Long::class -> "int"
       Float::class, Double::class -> "float"
@@ -238,114 +225,10 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
         // This should not happen
         validationErrors += "Could not find a ParameterDescription with name $k"
       } else {
-        // ATM simply pass to map
-        // TODO Vallidate & convert
-        result[desc.param] =
-          convertToTargetType(desc, v)
+        result[desc.param] = desc.convertToTargetType(v)
       }
     }
     return result
-  }
-
-  private fun convertToTargetType(descriptor: KeywordParameterDescriptor, rawVal: Optional<Any>): Any? {
-    return when {
-      rawVal.isEmpty -> {
-        val cls = descriptor.type
-        cls.safeCast(null)
-      }
-      else -> {
-        convertToType(descriptor.type, rawVal.get())
-      }
-    }
-  }
-
-  private fun convertToType(type: KClass<*>, value: Any): Any {
-    // if type already match or is compatible return
-    return if (type == value::class || type.isSuperclassOf(value::class)) {
-      value
-    } else {
-      // else convert
-      // todo: dynamically find `converters`
-      when (type) {
-        Boolean::class -> type.cast(value)
-        isClassOf(type, Number::class) -> toNumberType(type, value)
-        ByteArray::class -> (value as Collection<*>).map { toNumberType(Byte::class, it!!) as Byte }.toByteArray()
-        isClassOf(type, Collection::class) -> (value as Collection<*>)
-        isClassOf(type, Temporal::class) -> toTemporal(type, value)
-        String::class -> value.toString()
-        else -> type.constructors.single {
-          it.isAccessible &&
-          it.visibility == KVisibility.PUBLIC &&
-          it.parameters.size == 1 &&
-          (it.parameters[0].type.classifier as KClass<*>).isSuperclassOf(value::class)
-        }.call(value)
-      }
-    }
-  }
-
-  private fun isClassOf(derived: KClass<*>, base: KClass<*>): KClass<*> = if (base.isSuperclassOf(derived)) {
-    derived
-  } else {
-    Nothing::class
-  }
-
-  private fun toNumberType(type: KClass<*>, value: Any): Number {
-    val candidates = value.javaClass.kotlin.members
-      .filter { KVisibility.PUBLIC == it.visibility } // only public functions
-      .filter { it.returnType.classifier as KClass<*> == type } // return type must match
-      .filter { it.valueParameters.isEmpty() } // no arguments (except `this`)
-
-    for(converter in candidates) {
-      try {
-        val param = converter.instanceParameter ?: converter.extensionReceiverParameter
-        if (null != param) {
-          val result = converter.callBy(mapOf(param to value as Number))
-          return result as Number
-        }
-      } catch (ignore: Throwable) {
-        LoggerFactory.getLogger(javaClass).debug("Caught conversion exception for value '$value' to '$type'", ignore)
-        // noop
-      }
-    }
-
-    throw UnsupportedOperationException("Couldn't find a matching number converter for `$value` to '$type'")
-  }
-
-  private fun toTemporal(type: KClass<*>, value: Any): Temporal {
-    return if (value is String) {
-      OffsetDateTime.parse(value)
-    } else {
-      type.cast(value as Temporal)
-    } as Temporal
-  }
-
-  private fun findConstructor(targetType: KClass<*>, value: Any): Any {
-    // get all public ctors with one argument
-    val ctors = targetType.constructors.filter {
-      KVisibility.PUBLIC == it.visibility &&
-      it.valueParameters.size == 1 &&
-      // atm we ignore the intersection types
-      it.valueParameters[0].type.classifier is KClass<*>
-    }
-    // find the one with a compatible type
-    var ctor = ctors.find { (it.parameters[0].type.classifier as KClass<*>).isSuperclassOf(targetType) }
-    if (null != ctor) {
-      return ctor.call(value)
-    } else {
-      // do we have a string ctor?
-      ctor = ctors.find { (it.valueParameters[0].type.classifier as KClass<*>) == String::class }
-      if (null != ctor) {
-        return ctor.call(value.toString())
-      }
-    }
-    throw UnsupportedOperationException("Could not find a converter for $value")
-  }
-
-  private fun getStringConstructor(type: KClass<*>) = type.constructors.single {
-    it.isAccessible &&
-    KVisibility.PUBLIC == it.visibility &&
-    it.parameters.size == 1 &&
-    it.parameters[0].type.classifier == String::class
   }
 
   /**
