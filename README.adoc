@@ -1,4 +1,4 @@
-//:icons: font
+:icons: font
 
 = robotframework-kolib
 
@@ -10,7 +10,7 @@ This project is inspired by the https://github.com/robotframework/JavalibCore[ja
 
 == Intro
 
-In contrast to the all-in-one solution provided by javalib-core, this project is divided into a file://./robotframework-kolib-core/[core] library, and an file://./robotframework-kolib-spring[example library] utilizing spring.
+In contrast to the all-in-one solution provided by javalib-core, this project is divided into a link:robotframework-kolib-core/[core] library, and an link:robotframework-kolib-spring[example library] utilizing spring.
 
 The _core_ provide ready to use utils to easily create your own general library implementation without the need to take care of _Robot Framework_ or _kotlin_ specifics.
 
@@ -18,29 +18,32 @@ The _core_ provide ready to use utils to easily create your own general library 
 The following chapter give you an overview of some pitfalls you may run into when working with Robot Framework and an own library.
 
 === Varargs and lists
-_Robot Framework_ will not automatically convert vararg arguments to a list. Instead, each argument is passed as is, so the core lib has to take core of this to give you a "natural" usage.
-[source,robottestfile,title=vararg example]
-```Robot
+_Robot Framework_ will not automatically convert vararg arguments to a list. Instead, each argument is passed as is, so the core lib has to take care of this to give you a "natural" usage.
+
+[source,RobotFramework,title=vararg example]
+----
 *** Test Cases ***
 Test with varargs
   Print the names    Hugo  Amy  Josh
-```
+----
 As a result of this, passing a list object created with `Create list` build-in will result in type-conversion error
-[source,robottestfile,title=list example]
-```Robot
+
+[source,RobotFramework,title=list example]
+----
 *** Test Cases ***
 Test with list
   @{names}=  Create list   Hugo  Amy  Josh
   Print the names    @{names}
-```
+----
 
 === Type conversion
 ==== Dates
 _Robot Framework_ can automatically convert strings like `2021-09-13` to a date object. The generated `Date(time)` object will be generated in UTC timezone which may lead to unexpected results.
-[source,robottestfile,title=Example]
-```Robot
+
+[source,Robot,title=Example]
+----
 *** Test Cases ***
 Test with date
   Print the date  2021-09-13
-```
-This will - in my case (UTC+2) - result in an output 2021-09-13 02:00:00
+----
+This will - in my case (UTC+2) - result in an output 2021-09-13 02:00:00 instead of expected 2021-09-13 00:00:00.

@@ -19,50 +19,12 @@ import kotlin.reflect.full.isSuperclassOf
 
 object TemporalConverter {
 
-  fun convertToTemporal(targetType: KClass<*>, value: Any): Any = when {
-    value is String -> {
-      temporalOfString(targetType, value)
-    }
-    Instant::class.isSuperclassOf(value::class) -> {
-      temporalOfInstant(targetType, value as Instant)
-    }
-    Date::class.isSuperclassOf(value::class) -> {
-      temporalOfInstant(targetType, (value as Date).toInstant())
-    }
-    else -> throw UnsupportedOperationException("Could not find a matching temporal converter for `$value` to `$targetType`!")
-  }
-
-  private fun temporalOfString(targetType: KClass<*>, value: String): Any {
-    var tmp = temporalFormatter.parseBest(value, ZonedDateTime::from, LocalDateTime::from)
-    if (tmp is LocalDateTime) {
-      tmp = tmp.atOffset(ZoneOffset.UTC)
-    }
-    return temporalOfInstant(targetType, Instant.from(tmp))
-  }
-
-  private fun temporalOfInstant(targetType: KClass<*>, value: Instant): Any {
-    val zone = retrieveZoneId(value)
-    return when (targetType) {
-      Timestamp::class -> Timestamp(value.toEpochMilli())
-      Date::class -> Date(value.toEpochMilli())
-      LocalDate::class -> LocalDate.ofInstant(value, zone)
-      LocalTime::class -> LocalTime.ofInstant(value, zone)
-      LocalDateTime::class -> LocalDateTime.ofInstant(value, zone)
-      ZonedDateTime::class -> ZonedDateTime.ofInstant(value, zone)
-      OffsetTime::class -> OffsetTime.ofInstant(value, zone)
-      OffsetDateTime::class -> OffsetDateTime.ofInstant(value, zone)
-
-      else -> throw UnsupportedOperationException("No temporal converter defined to convert instant '$value' to type '$targetType'")
-    }
-  }
-
-  private fun retrieveZoneId(instant: Instant): ZoneId {
-    return try {
-      ZoneId.from(instant)
-    } catch (ignored: DateTimeException) {
-      ZoneId.of(ZoneOffset.UTC.id)
-    }
-  }
+  private const val MIN_NANO_WIDTH = 1
+  private const val MAX_NANO_WIDTH = 1
+  private const val DEFAULT_YEAR = 1900L
+  private const val DEFAULT_MONTH = 1L
+  private const val DEFAULT_DAY = 1L
+  private const val DEFAULT_TIME = 0L
 
   // robots default to UTC -> meaning a value of 2021-05-13 15:00:00 will be interpreted as UTC
   // lazy companion so we have to create formatter only once and only if required
@@ -85,7 +47,7 @@ object TemporalConverter {
       .appendPattern(":ss")
       .optionalStart()
       .appendPattern(".")
-      .appendFraction(ChronoField.NANO_OF_SECOND, 1, 9, false)
+      .appendFraction(ChronoField.NANO_OF_SECOND, MIN_NANO_WIDTH, MAX_NANO_WIDTH, false)
       .optionalEnd()
       .optionalEnd()
       .optionalEnd()
@@ -94,13 +56,63 @@ object TemporalConverter {
       .appendZoneOrOffsetId()
       .optionalEnd()
       // Defaults
-      .parseDefaulting(ChronoField.YEAR_OF_ERA, 1900)
-      .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
-      .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
-      .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-      .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-      .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-      .parseDefaulting(ChronoField.NANO_OF_SECOND, 0)
+      .parseDefaulting(ChronoField.YEAR_OF_ERA, DEFAULT_YEAR)
+      .parseDefaulting(ChronoField.MONTH_OF_YEAR, DEFAULT_MONTH)
+      .parseDefaulting(ChronoField.DAY_OF_MONTH, DEFAULT_DAY)
+      .parseDefaulting(ChronoField.HOUR_OF_DAY, DEFAULT_TIME)
+      .parseDefaulting(ChronoField.MINUTE_OF_HOUR, DEFAULT_TIME)
+      .parseDefaulting(ChronoField.SECOND_OF_MINUTE, DEFAULT_TIME)
+      .parseDefaulting(ChronoField.NANO_OF_SECOND, DEFAULT_TIME)
       .toFormatter()
   }
+
+  fun convertToTemporal(targetType: KClass<*>, value: Any): Any = when {
+    value is String -> {
+      temporalOfString(targetType, value)
+    }
+    Instant::class.isSuperclassOf(value::class) -> {
+      temporalOfInstant(targetType, value as Instant)
+    }
+    Date::class.isSuperclassOf(value::class) -> {
+      temporalOfInstant(targetType, (value as Date).toInstant())
+    }
+    else -> throw UnsupportedOperationException(
+      "Could not find a matching temporal converter for `$value` to `$targetType`!"
+    )
+  }
+
+  private fun temporalOfString(targetType: KClass<*>, value: String): Any {
+    var tmp = temporalFormatter.parseBest(value, ZonedDateTime::from, LocalDateTime::from)
+    if (tmp is LocalDateTime) {
+      tmp = tmp.atOffset(ZoneOffset.UTC)
+    }
+    return temporalOfInstant(targetType, Instant.from(tmp))
+  }
+
+  private fun temporalOfInstant(targetType: KClass<*>, value: Instant): Any {
+    val zone = retrieveZoneId(value)
+    return when (targetType) {
+      Timestamp::class -> Timestamp(value.toEpochMilli())
+      Date::class -> Date(value.toEpochMilli())
+      LocalDate::class -> LocalDate.ofInstant(value, zone)
+      LocalTime::class -> LocalTime.ofInstant(value, zone)
+      LocalDateTime::class -> LocalDateTime.ofInstant(value, zone)
+      ZonedDateTime::class -> ZonedDateTime.ofInstant(value, zone)
+      OffsetTime::class -> OffsetTime.ofInstant(value, zone)
+      OffsetDateTime::class -> OffsetDateTime.ofInstant(value, zone)
+
+      else -> throw UnsupportedOperationException(
+        "No temporal converter defined to convert instant '$value' to type '$targetType'"
+      )
+    }
+  }
+
+  private fun retrieveZoneId(instant: Instant): ZoneId {
+    return try {
+      ZoneId.from(instant)
+    } catch (ignored: DateTimeException) {
+      ZoneId.of(ZoneOffset.UTC.id)
+    }
+  }
+
 }

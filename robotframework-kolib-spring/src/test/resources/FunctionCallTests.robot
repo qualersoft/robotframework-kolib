@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation    Test suite for dynamic keyword resulution
-Library    de.qualersoft.robotframework.functioncall.DynamicTestLib
+Library   de.qualersoft.robotframework.dummypack.DummyLib
 
 *** Test Cases ***                                  # args, kwargs
 OneArgOnly

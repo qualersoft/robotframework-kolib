@@ -25,5 +25,29 @@ dependencies {
   testImplementation(group= "io.github.classgraph", name="classgraph", version="4.8.102")
 
   testImplementation(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
-  testImplementation(group = "org.robotframework", name = "robotframework", version = "3.2.2")
+  testImplementation(group = "org.robotframework", name = "robotframework", version = "4.0.1")
+}
+
+tasks.test {
+  useJUnitPlatform()
+  testLogging {
+    events = mutableSetOf(org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED)
+    exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+  }
+
+  addTestListener(object : TestListener {
+    override fun beforeSuite(suite: TestDescriptor) {}
+    override fun beforeTest(testDescriptor: TestDescriptor) {}
+    override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {}
+    override fun afterSuite(suite: TestDescriptor, result: TestResult) {
+      if (null == suite.parent) { // root suite
+        logger.lifecycle("----")
+        logger.lifecycle("Test result: ${result.resultType}")
+        logger.lifecycle("Test summary: ${result.testCount} tests, " +
+            "${result.successfulTestCount} succeeded, " +
+            "${result.failedTestCount} failed, " +
+            "${result.skippedTestCount} skipped")
+      }
+    }
+  })
 }

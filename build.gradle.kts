@@ -1,26 +1,27 @@
+import java.util.Properties
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.spring.gradle.dependencymanagement.dsl.DependencySetHandler
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  base
+  java
 
   kotlin("jvm") apply false
   kotlin("plugin.spring") apply false
-  id("org.jetbrains.dokka") apply false
 
   id("org.springframework.boot") apply false
   id("io.spring.dependency-management")
 
   id("io.gitlab.arturbosch.detekt") apply false
   jacoco
-  id("org.sonarqube")
 
-  `java-library`
   `maven-publish`
 
   id("com.github.ben-manes.versions") version "0.38.0"
+
+  id("org.jetbrains.dokka") apply false
+  id("org.asciidoctor.jvm.convert")
 }
 
 allprojects {
@@ -28,12 +29,9 @@ allprojects {
   apply(plugin = "io.spring.dependency-management")
 
   group = "de.qualersoft.robotframework"
-  version = "0.0.1-SNAPSHOT"
 
   repositories {
     mavenCentral()
-    mavenLocal()
-    jcenter()
   }
 
   dependencyManagement {
@@ -45,7 +43,7 @@ allprojects {
       fun dependencySet(group: String, version: String, action: ((DependencySetHandler).() -> Unit)) =
         dependencySet(mapOf("group" to group, "version" to version), action)
 
-      dependencySet(group = "io.kotest", version = "4.4.3") {
+      dependencySet(group = "io.kotest", version = "4.6.0") {
         entry("kotest-runner-junit5-jvm")
         entry("kotest-assertions-core-jvm")
         entry("kotest-property-jvm")
@@ -76,6 +74,10 @@ subprojects {
 
   apply(plugin = "maven-publish")
 
+  jacoco {
+    toolVersion = "0.8.7"
+  }
+
   dependencies {
     implementation(group = "ch.qos.logback", name = "logback-classic")
   }
@@ -99,7 +101,7 @@ subprojects {
   tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
       jvmTarget = JavaVersion.VERSION_11.toString()
-      apiVersion = "1.4"
+      apiVersion = "1.5"
     }
   }
 
@@ -142,6 +144,16 @@ subprojects {
 
   publishing {
     publications {
+      repositories {
+        maven {
+          name = "gh-qualersoft-kolib"
+          url = uri("https://maven.pkg.github.com/qualersoft/robotframework-kolib")
+          credentials {
+            username = (project.findProperty("publish.gh.qualersoft.rfkolib.gpr.usr") ?: System.getenv("USERNAME"))?.toString()
+            password = (project.findProperty("publish.gh.qualersoft.rfkolib.gpr.key") ?: System.getenv("TOKEN"))?.toString()
+          }
+        }
+      }
       create<MavenPublication>("maven") {
         from(components["java"])
         versionMapping {
@@ -155,4 +167,52 @@ subprojects {
       }
     }
   }
+}
+
+tasks.register("updateVersion") {
+  description = """ONLY FOR CI/CD purposes!
+    |
+    |This task is meant to be used by CI/CD to generate new release versions.
+    |Prerequists: a `gradle.properties` next to this build-script must exist.
+    |   version must follow semver-schema (<number>.<number.<number>*)
+    |Usage:
+    |  > ./gradlew updateVersion -PnewVersion="the new version"
+  """.trimMargin()
+
+  doLast {
+    var newVersion = project.findProperty("newVersion") as String?
+      ?: throw IllegalArgumentException(
+        "No `newVersion` specified!" +
+            " Usage: ./gradlew updateVersion -PnewVersion=<version>"
+      )
+
+    if (newVersion.contains("snapshot", true)) {
+      val props = Properties()
+      props.load(getGradlePropsFile().inputStream())
+      val currVersion = (props["version"] as String?)!!.split('.').toMutableList()
+      val next = currVersion.last()
+        .replace(Regex("[^\\d]+"), "").toInt() + 1
+      currVersion[currVersion.lastIndex] = "$next-SNAPSHOT"
+      newVersion = currVersion.joinToString(".")
+    }
+
+    persistVersion(newVersion)
+  }
+}
+
+fun getGradlePropsFile(): File {
+  val propsFile = files("./gradle.properties").singleFile
+  if (!propsFile.exists()) {
+    val msg = "This task requires version to be stored in gradle.properties file, which does not exist!"
+    throw UnsupportedOperationException(msg)
+  }
+  return propsFile
+}
+
+fun persistVersion(newVersion: String) {
+  val propsFile = getGradlePropsFile()
+  val props = Properties()
+  props.load(propsFile.inputStream())
+  props.setProperty("version", newVersion)
+  props.store(propsFile.outputStream(), null)
 }
