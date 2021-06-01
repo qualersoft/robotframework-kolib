@@ -9,16 +9,14 @@ object EnumConverter {
     val enums = targetType.java.enumConstants.map { it as Enum<*> }
     var candidates = enums.filter {
       it.name.equals(value.toString(), true) || // Plain match
-        // ignore spaces
-        it.name.replace(' ', '_').equals(value.toString().replace(' ', '_'), true) ||
-        // ignore underscores
-        it.name.replace('_', ' ').equals(value.toString().replace('_', ' '), true)
+      // ignore spaces
+      it.name.replace(' ', '_').equals(value.toString().replace(' ', '_'), true) ||
+      // ignore underscores
+      it.name.replace('_', ' ').equals(value.toString().replace('_', ' '), true)
     }
 
     if (candidates.isEmpty()) {
-      throw ClassCastException(
-        "Unable to cast value '$value' to enum '${targetType.simpleName}'! Valid values are: $enums."
-      )
+      throw ClassCastException("Unable to cast value '$value' to enum '${targetType.simpleName}'! Valid values are: $enums.")
     }
 
     if (1 < candidates.size) {

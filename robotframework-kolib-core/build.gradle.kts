@@ -16,23 +16,6 @@ dependencies {
 tasks.test {
   useJUnitPlatform()
   testLogging {
-    events = mutableSetOf(org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED)
-    exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    events("passed", "skipped", "failed")
   }
-
-  addTestListener(object : TestListener {
-    override fun beforeSuite(suite: TestDescriptor) {}
-    override fun beforeTest(testDescriptor: TestDescriptor) {}
-    override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {}
-    override fun afterSuite(suite: TestDescriptor, result: TestResult) {
-      if (null == suite.parent) { // root suite
-        logger.lifecycle("----")
-        logger.lifecycle("Test result: ${result.resultType}")
-        logger.lifecycle("Test summary: ${result.testCount} tests, " +
-            "${result.successfulTestCount} succeeded, " +
-            "${result.failedTestCount} failed, " +
-            "${result.skippedTestCount} skipped")
-      }
-    }
-  })
 }
