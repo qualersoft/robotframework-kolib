@@ -47,8 +47,8 @@ class RobotLibTest : FreeSpec({
       val args = sut.getKeywordArguments("withUnannotatedNotNullableDefault")
       assertAll(
         { args shouldHaveSize 1 },
-        { args[0] shouldHaveSize 2 },
-        { args[0] shouldContainExactly listOf("arg", null) }
+        { args[0] shouldHaveSize 1 },
+        { args[0] shouldContainExactly listOf("arg") }
       )
     }
     "unannotated args with default on nullable type defaults to null" {
@@ -80,34 +80,24 @@ class RobotLibTest : FreeSpec({
     "of keyword with" - {
       "a single summary line" {
         val doc = sut.getKeywordDocumentation("singleSummaryLine")
-        doc shouldBe """*Summary*:
-          |
-          |Just a single line""".trimMargin()
+        doc shouldBe "Just a single line"
       }
       "multiple summary lines" {
         val doc = sut.getKeywordDocumentation("multiSummaryLine")
-        doc shouldBe """*Summary*:
-          |
-          |Now I'm on a single line.""".trimMargin()
+        doc shouldBe "Now I'm on a single line."
       }
       "leading and trailing whites in summary lines get trimmed" {
         val doc = sut.getKeywordDocumentation("multiSummaryLinesWithWhitespaces")
-        doc shouldBe """*Summary*:
-          |
-          |<This two whitespaces will be trimmed as well as the two trailing whitespaces> <tabs at front and end of an entry are trimmed as well> <Newlines are also gone>""".trimMargin()
+        doc shouldBe "<This two whitespaces will be trimmed as well as the two trailing whitespaces> <tabs at front and end of an entry are trimmed as well> <Newlines are also gone>"
       }
       // <<------------------>>
       "a single details line" {
         val doc = sut.getKeywordDocumentation("justSingleDetailsLine")
-        doc shouldBe """*Details*:
-          |
-          |Only one details line""".trimMargin()
+        doc shouldBe "Only one details line"
       }
       "multiple details lines" {
         val doc = sut.getKeywordDocumentation("multipleDetailsLine")
-        doc shouldBe """*Details*:
-          |
-          |I'm a details documentation
+        doc shouldBe """I'm a details documentation
           |with multiple
           |lines""".trimMargin()
       }

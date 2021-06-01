@@ -10,13 +10,13 @@ import de.qualersoft.robotframework.library.model.KeywordDescriptor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.context.ConfigurableApplicationContext
-import kotlin.jvm.internal.Reflection
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.memberFunctions
+import kotlin.reflect.jvm.isAccessible
 
-open class RobotLib(root: KClass<*>, vararg args: String) : MinimalDynamicLibrary, RFKwArgsSupport,
+open class RobotLib(vararg args: String, root: KClass<*>) : MinimalDynamicLibrary, RFKwArgsSupport,
   RFArgumentSpecSupport, RFArgumentTypesSupport, RfLibdocSupport {
 
   private val log: Logger = LoggerFactory.getLogger(javaClass)
@@ -26,16 +26,12 @@ open class RobotLib(root: KClass<*>, vararg args: String) : MinimalDynamicLibrar
 
   private val keyWords: Map<String, KeywordDescriptor> by lazy { findKeywordFunctions() }
 
-
   init {
     log.debug("Initializing ${this::class.simpleName} with ${root.simpleName}")
     @SuppressWarnings("SpreadOperator")
     ctx = LibraryContext(*args, root = root).ctx
     log.debug("${this::class} initialized ${root.simpleName}")
   }
-
-  @SuppressWarnings("SpreadOperator")
-  constructor(root: Class<*>, vararg args: String): this(Reflection.createKotlinClass(root), *args)
 
   final override fun getKeywordNames(): List<String> {
     return keyWords.keys.toList()
@@ -44,6 +40,7 @@ open class RobotLib(root: KClass<*>, vararg args: String) : MinimalDynamicLibrar
   // not called because we also implement the kwdarg version
   final override fun runKeyword(name: String, args: List<Any?>): Any? = null
 
+  @SuppressWarnings("SpreadOperator")
   final override fun runKeyword(name: String, args: List<Any?>, kwArgs: Map<String, Any?>): Any? {
     log.debug("Running keyword $name with args $args and kwArgs $kwArgs")
     val kwd = keyWords.getValue(name)
@@ -104,13 +101,31 @@ open class RobotLib(root: KClass<*>, vararg args: String) : MinimalDynamicLibrar
     it.memberFunctions.toList()
   }.filter {
     it.isAnnotationPresent(KwdClass.KCLASS)
-  }.associate {
+  }.map {
     val dto = KeywordDescriptor(it)
     dto.name to dto
-  }
+  }.toMap()
 
   private fun KFunction<*>.isAnnotationPresent(clazz: KClass<out Annotation>): Boolean =
     this.annotations.any { it.annotationClass == clazz }
+
+
+  private fun convertDefaultToType(type: KClass<*>, value: String): Any {
+    return when (type) {
+      Boolean::class -> value.toBoolean()
+      Byte::class -> value.toByte()
+      ByteArray::class -> value.toByte()
+      Int::class -> value.toInt()
+      Float::class -> value.toFloat()
+      Double::class -> value.toDouble()
+      String::class -> value
+      else -> type.constructors.single {
+        it.isAccessible &&
+        it.parameters.size == 1 &&
+        it.parameters[0].type.classifier == String::class
+      }.call(value)
+    }
+  }
 
   object KwdClass {
     val KCLASS = Keyword::class

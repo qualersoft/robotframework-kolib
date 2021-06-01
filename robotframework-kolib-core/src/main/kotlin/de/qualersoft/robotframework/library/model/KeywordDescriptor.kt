@@ -183,7 +183,6 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
    *
    * @see mapArgumentsToParameterNames
    */
-  @Suppress("TooGenericException")
   private fun consumeKwArgs(
     remainingKwArgs: MutableMap<String, Any?>,
     result: MutableMap<String, Optional<Any>?>
@@ -208,8 +207,7 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
           }
         }
       } else {
-        validationErrors += "No kwArg-Parameter found but arguments left! " +
-          "The following kwArgs are left over: $remainingKwArgs"
+        validationErrors += "No kwArg-Parameter found but arguments left! The following kwArgs are left over: $remainingKwArgs"
       }
     }
     return validationErrors

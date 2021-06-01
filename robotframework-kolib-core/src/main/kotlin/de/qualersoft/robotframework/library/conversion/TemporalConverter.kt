@@ -19,53 +19,6 @@ import kotlin.reflect.full.isSuperclassOf
 
 object TemporalConverter {
 
-  private const val MIN_NANO_WIDTH = 1
-  private const val MAX_NANO_WIDTH = 1
-  private const val DEFAULT_YEAR = 1900L
-  private const val DEFAULT_MONTH = 1L
-  private const val DEFAULT_DAY = 1L
-  private const val DEFAULT_TIME = 0L
-
-  // robots default to UTC -> meaning a value of 2021-05-13 15:00:00 will be interpreted as UTC
-  // lazy companion so we have to create formatter only once and only if required
-  private val temporalFormatter by lazy {
-    DateTimeFormatterBuilder()
-      // Date stuff
-      .optionalStart()
-      .appendPattern("yyyy-MM-dd")
-      .optionalEnd()
-      .optionalStart()
-      .appendPattern("'T'")
-      .optionalEnd()
-      .optionalStart()
-      .appendPattern(" ")
-      .optionalEnd()
-      // Time stuff
-      .optionalStart()
-      .appendPattern("HH:mm")
-      .optionalStart()
-      .appendPattern(":ss")
-      .optionalStart()
-      .appendPattern(".")
-      .appendFraction(ChronoField.NANO_OF_SECOND, MIN_NANO_WIDTH, MAX_NANO_WIDTH, false)
-      .optionalEnd()
-      .optionalEnd()
-      .optionalEnd()
-      // Zone stuff
-      .optionalStart()
-      .appendZoneOrOffsetId()
-      .optionalEnd()
-      // Defaults
-      .parseDefaulting(ChronoField.YEAR_OF_ERA, DEFAULT_YEAR)
-      .parseDefaulting(ChronoField.MONTH_OF_YEAR, DEFAULT_MONTH)
-      .parseDefaulting(ChronoField.DAY_OF_MONTH, DEFAULT_DAY)
-      .parseDefaulting(ChronoField.HOUR_OF_DAY, DEFAULT_TIME)
-      .parseDefaulting(ChronoField.MINUTE_OF_HOUR, DEFAULT_TIME)
-      .parseDefaulting(ChronoField.SECOND_OF_MINUTE, DEFAULT_TIME)
-      .parseDefaulting(ChronoField.NANO_OF_SECOND, DEFAULT_TIME)
-      .toFormatter()
-  }
-
   fun convertToTemporal(targetType: KClass<*>, value: Any): Any = when {
     value is String -> {
       temporalOfString(targetType, value)
@@ -76,9 +29,7 @@ object TemporalConverter {
     Date::class.isSuperclassOf(value::class) -> {
       temporalOfInstant(targetType, (value as Date).toInstant())
     }
-    else -> throw UnsupportedOperationException(
-      "Could not find a matching temporal converter for `$value` to `$targetType`!"
-    )
+    else -> throw UnsupportedOperationException("Could not find a matching temporal converter for `$value` to `$targetType`!")
   }
 
   private fun temporalOfString(targetType: KClass<*>, value: String): Any {
@@ -101,9 +52,7 @@ object TemporalConverter {
       OffsetTime::class -> OffsetTime.ofInstant(value, zone)
       OffsetDateTime::class -> OffsetDateTime.ofInstant(value, zone)
 
-      else -> throw UnsupportedOperationException(
-        "No temporal converter defined to convert instant '$value' to type '$targetType'"
-      )
+      else -> throw UnsupportedOperationException("No temporal converter defined to convert instant '$value' to type '$targetType'")
     }
   }
 
@@ -115,4 +64,43 @@ object TemporalConverter {
     }
   }
 
+  // robots default to UTC -> meaning a value of 2021-05-13 15:00:00 will be interpreted as UTC
+  // lazy companion so we have to create formatter only once and only if required
+  private val temporalFormatter by lazy {
+    DateTimeFormatterBuilder()
+      // Date stuff
+      .optionalStart()
+      .appendPattern("yyyy-MM-dd")
+      .optionalEnd()
+      .optionalStart()
+      .appendPattern("'T'")
+      .optionalEnd()
+      .optionalStart()
+      .appendPattern(" ")
+      .optionalEnd()
+      // Time stuff
+      .optionalStart()
+      .appendPattern("HH:mm")
+      .optionalStart()
+      .appendPattern(":ss")
+      .optionalStart()
+      .appendPattern(".")
+      .appendFraction(ChronoField.NANO_OF_SECOND, 1, 9, false)
+      .optionalEnd()
+      .optionalEnd()
+      .optionalEnd()
+      // Zone stuff
+      .optionalStart()
+      .appendZoneOrOffsetId()
+      .optionalEnd()
+      // Defaults
+      .parseDefaulting(ChronoField.YEAR_OF_ERA, 1900)
+      .parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
+      .parseDefaulting(ChronoField.DAY_OF_MONTH, 1)
+      .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+      .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+      .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+      .parseDefaulting(ChronoField.NANO_OF_SECOND, 0)
+      .toFormatter()
+  }
 }
