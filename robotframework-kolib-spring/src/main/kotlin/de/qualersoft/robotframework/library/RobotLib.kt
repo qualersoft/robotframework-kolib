@@ -47,6 +47,23 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
 
   private val keyWords: Map<String, KeywordDescriptor> by lazy { findKeywordFunctions() }
 
+  private val rootPath by lazy {
+    val src = root.java.protectionDomain.codeSource
+    return@lazy if (null != src) {
+      File(src.location.toURI())
+    } else {
+      val path = root.java.getResource("${root.java.simpleName}.class")?.path?.let {
+        it.substring(it.indexOf(':')+1, it.indexOf('!'))
+      }
+      if (null == path) {
+        null
+      } else {
+        val jarFilePath = URLDecoder.decode(path, StandardCharsets.UTF_8)
+        File(jarFilePath)
+      }
+    }
+  }
+
   init {
     log.debug("Initializing ${this::class.simpleName} with ${root.simpleName}")
     @SuppressWarnings("SpreadOperator")
@@ -102,29 +119,12 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
     else -> keyWords.getValue(name).description
   }
 
-  override fun getKeywordSource(name: String): String? {
+  final override fun getKeywordSource(name: String): String? {
     val kwd = keyWords.getValue(name)
     val pathToJar = rootPath ?: return null
     val classPath = kwd.declaringClass.qualifiedName?.replace('.', File.separatorChar)
     return "$pathToJar${File.separatorChar}$classPath" 
   }
-
-  private val rootPath by lazy {
-    val src = root.java.protectionDomain.codeSource
-    return@lazy if (null != src) {
-      File(src.location.toURI())
-    } else {
-      val path = root.java.getResource("${root.java.simpleName}.class")?.path?.let {
-        it.substring(it.indexOf(':')+1, it.indexOf('!'))
-      }
-      if (null == path) {
-        null
-      } else {
-        val jarFilePath = URLDecoder.decode(path, StandardCharsets.UTF_8)
-        File(jarFilePath)
-      }
-    }
-  } 
 
   /**
    * Meant to be overwritten. Default impl returns empty string

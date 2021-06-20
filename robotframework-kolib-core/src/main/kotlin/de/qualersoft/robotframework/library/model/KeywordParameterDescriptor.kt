@@ -18,7 +18,6 @@ import kotlin.reflect.safeCast
 
 class KeywordParameterDescriptor(val param: KParameter) {
 
-
   val annotation = (param.annotations.firstOrNull { it is KwdArg } ?: KwdArg::class.createInstance()) as KwdArg
 
   /**
@@ -37,7 +36,6 @@ class KeywordParameterDescriptor(val param: KParameter) {
    * If no name could be retrieved 'arg'+<position>. E.g. arg0, arg1, and so on.
    */
   val name = param.name ?: "arg${position}"
-
 
   /**
    * Used to get TypeParameter information of generics
