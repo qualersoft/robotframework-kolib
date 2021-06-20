@@ -1,6 +1,6 @@
 package de.qualersoft.robotframework.library.binding
 
-interface RFTagSupport {
+interface RfTagSupport {
 
   /**
    * Gets the tags of a keyword, if any.

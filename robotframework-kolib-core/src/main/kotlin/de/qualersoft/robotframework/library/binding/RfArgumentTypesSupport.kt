@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
  *
  * @since RF 3.1
  */
-interface RFArgumentTypesSupport {
+interface RfArgumentTypesSupport {
 
   /**
    * Retrieves the type of a keyword's arguments.

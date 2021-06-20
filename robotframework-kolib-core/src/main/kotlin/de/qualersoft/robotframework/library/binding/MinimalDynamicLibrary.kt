@@ -18,8 +18,8 @@ interface MinimalDynamicLibrary {
    * Robot Framework interface method 'run_keyword' required for dynamic libraries.
    *
    * __Remark__:
-   * >If your library also implements [RFKwArgsSupport], robot framework will call
-   * >[RFKwArgsSupport.runKeyword] instead of this!
+   * >If your library also implements [RfKwArgsSupport], robot framework will call
+   * >[RfKwArgsSupport.runKeyword] instead of this!
    *
    * @param name The Name of keyword to be executed
    * @param args A list of positional arguments given to the keyword in the test data
