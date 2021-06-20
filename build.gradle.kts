@@ -96,6 +96,7 @@ subprojects {
 
   tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.withType<JacocoReport>())
   }
 
   tasks.withType<KotlinCompile>().configureEach {
