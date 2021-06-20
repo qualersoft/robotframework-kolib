@@ -10,7 +10,7 @@ package de.qualersoft.robotframework.library.binding
  * keywords, and under these circumstances they would need to check the argument
  * counts themselves.
  */
-interface RFArgumentSpecSupport {
+interface RfArgumentSpecSupport {
 
   /**
    * Retrieves parameter name (and default value) for the given keyword.

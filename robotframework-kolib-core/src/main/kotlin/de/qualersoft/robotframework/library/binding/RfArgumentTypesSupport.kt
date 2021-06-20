@@ -1,7 +1,5 @@
 package de.qualersoft.robotframework.library.binding
 
-import kotlin.reflect.KClass
-
 /**
  * Interface to provide Robot Framework with
  * [type information](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#getting-keyword-argument-types)
@@ -12,7 +10,7 @@ import kotlin.reflect.KClass
  *
  * @since RF 3.1
  */
-interface RFArgumentTypesSupport {
+interface RfArgumentTypesSupport {
 
   /**
    * Retrieves the type of a keyword's arguments.

@@ -23,7 +23,6 @@ import kotlin.reflect.KClass
 class TemporalConverterTest {
 
   companion object {
-
     @JvmStatic
     fun dateProvider() = Stream.of(
       Arguments.of(
@@ -118,5 +117,4 @@ class TemporalConverterTest {
       { res shouldBe expected }
     )
   }
-
 }

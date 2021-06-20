@@ -3,7 +3,7 @@ package de.qualersoft.robotframework.library.binding
 /**
  *
  */
-interface RFKwArgsSupport {
+interface RfKwArgsSupport {
 
   /**
    * Robot Framework interface method 'run_keyword' required for dynamic libraries.
