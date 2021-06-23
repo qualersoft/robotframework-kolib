@@ -6,7 +6,6 @@ import kotlin.reflect.KClass
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class KwdArg(
-
   /**
    * Documentation of the argument, will be put in generated documentation of the keyword.
    */
@@ -25,9 +24,17 @@ annotation class KwdArg(
 
   /**
    * Type of the argument.
-   * Can be used to override the normal type
+   * Can be used to override the normal type.
+   * Defaults to [Nothing] class which indicates to use the real type.
    */
-  val type: KClass<*> = Nothing::class
+  val type: KClass<*> = Nothing::class,
+
+  /**
+   * Only used if dealing with java functions, where the name can not be retrieved.
+   * Gives the user the possibility to avoid argument names like `arg1`.
+   * Defaults to [NULL_STRING] which indicates to use the build in detection mode.
+   */
+  val name: String = NULL_STRING
 ) {
   companion object {
     const val NULL_STRING = "\u0000"

@@ -20,7 +20,8 @@ class EnumConverterTest {
       Arguments.of("GREEN", MyColor.GREEN), // Exact match
       Arguments.of("red", MyColor.RED), // case insensitive
       Arguments.of("dark green", MyColor.DARK_GREEN), // with spaces
-      Arguments.of("light_red", MyColor.`LIGHT RED`) // with underscore
+      Arguments.of("light_red", MyColor.`LIGHT RED`), // with underscore
+      Arguments.of("CD", MyColor.CD) // requires exact match
     )
   }
 
@@ -55,12 +56,25 @@ class EnumConverterTest {
     )
   }
 
+  @Test
+  fun testMultipleCaseSensitiveEnums() {
+    val ex = assertThrows<ClassCastException> {
+      EnumConverter.convertToEnum(MyColor::class, "Cd")
+    }
+    assertAll(
+      { ex.message shouldContain "'Cd'" },
+      { ex.message shouldContain "multiple candidates found" }
+    )
+  }
+
   enum class MyColor {
     RED,
     GREEN,
     DARK_GREEN,
     `LIGHT RED`,
     `A_ B`,
-    `A _B`
+    `A _B`,
+    cD,
+    CD
   }
 }

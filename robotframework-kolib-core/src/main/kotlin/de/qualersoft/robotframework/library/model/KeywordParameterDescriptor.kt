@@ -35,7 +35,7 @@ class KeywordParameterDescriptor(val param: KParameter) {
    * Name of the parameter as retrieved by kotlin.
    * If no name could be retrieved 'arg'+<position>. E.g. arg0, arg1, and so on.
    */
-  val name = param.name ?: "arg${position}"
+  val name = determineName()
 
   /**
    * Used to get TypeParameter information of generics
@@ -50,20 +50,20 @@ class KeywordParameterDescriptor(val param: KParameter) {
   val documentation: String by lazy {
     val typeName = type.simpleName
     val desc = annotation.doc.trim()
-    val defVal = if (default.isNullOrBlank()) {
+    val defVal = if (null == default) {
       ""
     } else {
-      "\n\tDEFAULT: ${default.trim()}"
+      "\n\tDEFAULT: `$default`"
     }
-    return@lazy "$name [$typeName] $desc$defVal"
+    return@lazy "$name [$typeName] $desc$defVal".trim()
   }
 
   val robotArgumentDescriptor by lazy {
     val argName = when (kind) {
-                    ParameterKind.VALUE -> ""
-                    ParameterKind.VARARG -> "*"
-                    ParameterKind.KWARG -> "**"
-                  } + name
+      ParameterKind.VALUE -> ""
+      ParameterKind.VARARG -> "*"
+      ParameterKind.KWARG -> "**"
+    } + name
     val res = mutableListOf<Any?>(argName)
     // VARARG & KWARG is automatically assumed optional by RF
     if (optional && kind == ParameterKind.VALUE) {
@@ -78,7 +78,7 @@ class KeywordParameterDescriptor(val param: KParameter) {
     if (param.isVararg) {
       throw IllegalArgumentException(
         "Parameter $name is a vararg-parameter, which is not supported! " +
-        "Use List-type and mark it with 'KwdArg.kind = VARARG' to solve this."
+          "Use List-type and mark it with 'KwdArg.kind = VARARG' to solve this."
       )
     }
 
@@ -87,21 +87,34 @@ class KeywordParameterDescriptor(val param: KParameter) {
       if (!type.isSubclassOf(List::class)) {
         throw IllegalArgumentException(
           "The parameter $name is marked as vararg but it's type is not a " +
-          "subclass of List!"
+            "subclass of List!"
         )
       }
     } else if (
       ParameterKind.KWARG == kind &&
       !(
-          type.isSubclassOf(Map::class) &&
+        type.isSubclassOf(Map::class) &&
           String::class == (_type.arguments.first().type!!.classifier as KClass<*>)
-       )
+        )
     ) {
       throw IllegalArgumentException(
         "The parameter $name is marked as kwarg but it's type is not a " +
-        "subclass of Map or its key-type parameter is not String"
+          "subclass of Map or its key-type parameter is not String"
       )
     } // no further else required VALUE has no restrictions (ATM ;) :P)
+  }
+
+  private fun determineName(): String {
+    val name = param.name
+    return if (name.isNullOrBlank() || name.matches(Regex("arg\\d+"))) {
+      if ((KwdArg.NULL_STRING == annotation.name) || annotation.name.isBlank() ) {
+        "arg${position - 1}"
+      } else {
+        annotation.name.trim()
+      }
+    } else {
+      name
+    }
   }
 
   private fun determineType(): KClass<*> {
@@ -168,9 +181,9 @@ class KeywordParameterDescriptor(val param: KParameter) {
         // last hope we find a constructor in target type that match the value type
         else -> type.constructors.single {
           it.isAccessible &&
-          it.visibility == KVisibility.PUBLIC &&
-          it.parameters.size == 1 &&
-          (it.parameters[0].type.classifier as KClass<*>).isSuperclassOf(value::class)
+            it.visibility == KVisibility.PUBLIC &&
+            it.parameters.size == 1 &&
+            (it.parameters[0].type.classifier as KClass<*>).isSuperclassOf(value::class)
         }.call(value)
       }
     }

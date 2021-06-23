@@ -287,9 +287,8 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
 
   private fun createParameterDoc() =
     if (parameters.isNotEmpty()) {
-      val sep = System.lineSeparator()
-      "$sep*Parameters*:$sep" + parameters.joinToString(
-        "$sep- ", prefix = "- "
+      "\n*Parameters*:\n" + parameters.joinToString(
+        "\n- ", prefix = "- "
       ) { it.documentation }
     } else {
       ""
