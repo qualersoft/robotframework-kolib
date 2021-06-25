@@ -86,21 +86,23 @@ object TemporalConverter {
     if (tmp is LocalDateTime) {
       tmp = tmp.atOffset(ZoneOffset.UTC)
     }
-    return temporalOfInstant(targetType, Instant.from(tmp))
+    val zone = ZoneOffset.ofTotalSeconds(tmp.get(ChronoField.OFFSET_SECONDS)).normalized()
+    return temporalOfInstant(targetType, Instant.from(tmp), zone)
   }
 
-  private fun temporalOfInstant(targetType: KClass<*>, value: Instant): Any {
-    val zone = retrieveZoneId(value)
+  private fun temporalOfInstant(targetType: KClass<*>, value: Instant, zoneId: ZoneId? = null): Any {
+    val zone = zoneId ?: retrieveZoneId(value)
+    @Suppress("MagicNumber")
+    val msOffset = zone.rules.getOffset(value).totalSeconds * 1000
     return when (targetType) {
-      Timestamp::class -> Timestamp(value.toEpochMilli())
-      Date::class -> Date(value.toEpochMilli())
+      Timestamp::class -> Timestamp(value.toEpochMilli() + msOffset)
+      Date::class -> Date(value.toEpochMilli() + msOffset)
       LocalDate::class -> LocalDate.ofInstant(value, zone)
       LocalTime::class -> LocalTime.ofInstant(value, zone)
       LocalDateTime::class -> LocalDateTime.ofInstant(value, zone)
       ZonedDateTime::class -> ZonedDateTime.ofInstant(value, zone)
       OffsetTime::class -> OffsetTime.ofInstant(value, zone)
       OffsetDateTime::class -> OffsetDateTime.ofInstant(value, zone)
-
       else -> throw UnsupportedOperationException(
         "No temporal converter defined to convert instant '$value' to type '$targetType'"
       )
