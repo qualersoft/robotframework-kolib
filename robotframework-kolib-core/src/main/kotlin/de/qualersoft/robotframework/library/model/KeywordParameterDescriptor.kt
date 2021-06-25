@@ -9,7 +9,6 @@ import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KVisibility
-import kotlin.reflect.cast
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
@@ -107,7 +106,7 @@ class KeywordParameterDescriptor(val param: KParameter) {
   private fun determineName(): String {
     val name = param.name
     return if (name.isNullOrBlank() || name.matches(Regex("arg\\d+"))) {
-      if ((KwdArg.NULL_STRING == annotation.name) || annotation.name.isBlank() ) {
+      if ((KwdArg.NULL_STRING == annotation.name) || annotation.name.isBlank()) {
         "arg${position - 1}"
       } else {
         annotation.name.trim()
@@ -158,7 +157,11 @@ class KeywordParameterDescriptor(val param: KParameter) {
       // else convert
       when (type) {
         Boolean::class -> {
-          type.cast(value)
+          when (value) {
+            is String -> value.toBoolean()
+            is Number -> value.toDouble() != 0.0
+            else -> false
+          }
         }
         isClassOf(type, Number::class) -> {
           NumberConverter.convertToNumber(type, value)

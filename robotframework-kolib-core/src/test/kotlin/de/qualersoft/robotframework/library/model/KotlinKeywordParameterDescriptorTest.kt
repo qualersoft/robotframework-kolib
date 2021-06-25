@@ -8,6 +8,7 @@ import io.kotest.matchers.string.shouldContain
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.converter.JavaTimeConversionPattern
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.functions
 import kotlin.reflect.full.valueParameters
@@ -81,6 +82,7 @@ class KotlinKeywordParameterDescriptorTest {
   }
   //</editor-fold>
 
+  //<editor-fold desc="With annotation">
   @Test
   fun testWithListAsVarArg() {
     val param = getParameterOf<AnnotatedFunctionsHolderClass>("withListAsVarArg")
@@ -135,6 +137,18 @@ class KotlinKeywordParameterDescriptorTest {
       { ex.message shouldContain "subclass of Map" }
     )
   }
+
+  @Test
+  fun testWithAnnotationButNotKwdArgs() {
+    val param = getParameterOf<AnnotatedFunctionsHolderClass>("withAnnotationButNotKwdArgs")
+    val descriptor = KeywordParameterDescriptor(param)
+    assertAll(
+      { descriptor.kind shouldBe ParameterKind.VALUE },
+      { descriptor.name shouldBe "test" },
+      { descriptor.optional shouldBe false }
+    )
+  }
+  //</editor-fold>
 
   //<editor-fold desc="Documentation generation">
   @Test
@@ -256,6 +270,8 @@ class KotlinKeywordParameterDescriptorTest {
     fun withDocuAndDefault(@KwdArg(doc = "A test value", default = "empty") test: String = "empty") {}
     fun withDocuAndEmptyDefault(@KwdArg(doc = "A test value", default = "") test: String = "") {}
     fun withDocuAndBlankDefault(@KwdArg(doc = "A test value", default = " ") test: String = " ") {}
+
+    fun withAnnotationButNotKwdArgs(@JavaTimeConversionPattern("") test: String) {}
   }
 }
 
