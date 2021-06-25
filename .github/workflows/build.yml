@@ -147,8 +147,6 @@ jobs:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-test-${{ github.run_id }}
       - name: "Publish Report"
-        env:
-          CODECOV_TOKEN: ${{ secrets.CC_TOKEN }}
         run: bash <(curl -s https://codecov.io/bash) -B ${{ needs.init.outputs.branch }}
 
   publishSnapshot:
