@@ -23,7 +23,6 @@ import kotlin.reflect.KClass
 class TemporalConverterTest {
 
   companion object {
-
     @JvmStatic
     fun dateProvider() = Stream.of(
       Arguments.of(
@@ -97,6 +96,11 @@ class TemporalConverterTest {
         "2021-01-07 09:53:36",
         OffsetDateTime::class,
         OffsetDateTime.ofInstant(buildUtcDate(2021, 1, 7, 9, 53, 36), ZoneOffset.UTC)
+      ),
+      Arguments.of(
+        "2021-01-08 09:53:36+02:00",
+        ZonedDateTime::class,
+        ZonedDateTime.ofInstant(buildUtcDate(2021, 1, 8, 7, 53, 36), ZoneOffset.ofHours(2))
       )
     )
 
@@ -106,7 +110,6 @@ class TemporalConverterTest {
         .setDate(year, month - 1, day)
         .setTimeOfDay(hour, minute, sec)
         .build().toInstant()
-
   }
 
   @MethodSource("dateProvider")
@@ -118,5 +121,4 @@ class TemporalConverterTest {
       { res shouldBe expected }
     )
   }
-
 }

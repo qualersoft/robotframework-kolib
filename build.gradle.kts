@@ -24,6 +24,10 @@ plugins {
   id("org.asciidoctor.jvm.convert")
 }
 
+jacoco {
+  toolVersion = "0.8.7"
+}
+
 allprojects {
   apply(plugin = "idea")
   apply(plugin = "io.spring.dependency-management")
@@ -83,7 +87,7 @@ subprojects {
   }
 
   configure<DetektExtension> {
-    failFast = true
+    allRules = true
     config = files("$rootDir/detekt.yml")
     input = files("src/main/kotlin")
 
@@ -96,6 +100,7 @@ subprojects {
 
   tasks.withType<Test> {
     useJUnitPlatform()
+    finalizedBy(tasks.withType<JacocoReport>())
   }
 
   tasks.withType<KotlinCompile>().configureEach {
@@ -167,6 +172,24 @@ subprojects {
       }
     }
   }
+}
+
+val jMerge = tasks.register<JacocoMerge>("jacocoMerge") {
+  subprojects.forEach {
+    executionData(it.tasks.withType<Test>())
+  }
+}
+
+tasks.register<JacocoReport>("jacocoRootReport") {
+  dependsOn(jMerge)
+  subprojects.forEach {
+    val srcDirs = it.sourceSets.main.get().allSource.srcDirs
+    additionalSourceDirs.from(srcDirs)
+    sourceDirectories.from(srcDirs)
+    classDirectories.from(it.sourceSets.main.get().output)
+    
+  }
+  executionData.from(jMerge.get().destinationFile)
 }
 
 tasks.register("updateVersion") {

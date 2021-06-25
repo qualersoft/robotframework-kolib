@@ -202,7 +202,7 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
             val newMap = originMap.entries.associate { it.key.toString() to it.value }.toMutableMap()
             newMap.putAll(remainingKwArgs)
             result[desc.name] = Optional.of(newMap)
-          } catch (ex: Exception) {
+          } catch (ex: ClassCastException) {
             validationErrors += "Unable to extend existing kwArg-map: ${kwEntry.get()}" +
                                 " with remaining kwArgs $remainingKwArgs! $ex"
           }
@@ -287,9 +287,8 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
 
   private fun createParameterDoc() =
     if (parameters.isNotEmpty()) {
-      val sep = System.lineSeparator()
-      "$sep*Parameters*:$sep" + parameters.joinToString(
-        "$sep- ", prefix = "- "
+      "\n*Parameters*:\n" + parameters.joinToString(
+        "\n- ", prefix = "- "
       ) { it.documentation }
     } else {
       ""
