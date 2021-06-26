@@ -1,6 +1,7 @@
 package de.qualersoft.robotframework.library.model
 
 import de.qualersoft.robotframework.library.annotation.KwdArg
+import de.qualersoft.robotframework.library.conversion.BooleanConverter
 import de.qualersoft.robotframework.library.conversion.EnumConverter
 import de.qualersoft.robotframework.library.conversion.NumberConverter
 import de.qualersoft.robotframework.library.conversion.TemporalConverter
@@ -157,11 +158,7 @@ class KeywordParameterDescriptor(val param: KParameter) {
       // else convert
       when (type) {
         Boolean::class -> {
-          when (value) {
-            is String -> value.toBoolean()
-            is Number -> value.toDouble() != 0.0
-            else -> false
-          }
+          BooleanConverter.convertToBoolean(value)
         }
         isClassOf(type, Number::class) -> {
           NumberConverter.convertToNumber(type, value)
