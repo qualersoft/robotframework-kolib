@@ -23,10 +23,12 @@ A clear and concise description of what you expected to happen.
 If applicable, add logs, screenshots or other content to help explain your problem and our investigation.
 
 **System (please complete the following information):**
+- Library-Version: [e.g. 1.0.0-SNAPSHOT]
+- Java-Version: [e.g. 11]
+- Java-Vendor: [e.g. AdoptOpenJDK]
+- Kotlin-Version: [e.g. 1.5.10]
 - OS: [e.g. Windows]
 - OS-Version: [e.g. 10 - 20H2 (Build 19042.906)]
-- Gradle-Version: [e.g. 7.0]
-- Plugin-Version: [e.g. 1.0.0]
 
 **Additional context**
 Add any other context about the problem here.
