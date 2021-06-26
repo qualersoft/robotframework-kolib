@@ -76,7 +76,7 @@ object TemporalConverter {
     Date::class.isSuperclassOf(value::class) -> {
       temporalOfInstant(targetType, (value as Date).toInstant())
     }
-    else -> throw UnsupportedOperationException(
+    else -> throw IllegalArgumentException(
       "Could not find a matching temporal converter for `$value` to `$targetType`!"
     )
   }
@@ -84,26 +84,27 @@ object TemporalConverter {
   private fun temporalOfString(targetType: KClass<*>, value: String): Any {
     var tmp = temporalFormatter.parseBest(value, ZonedDateTime::from, LocalDateTime::from)
     if (tmp is LocalDateTime) {
-      tmp = tmp.atOffset(ZoneOffset.UTC)
+      // we didn't found a zone info -> as of ISO 8601 systems 'local' zone is assumed
+      tmp = tmp.atZone(ZoneId.systemDefault())
     }
+    // here we definitely have a zone info
     val zone = ZoneOffset.ofTotalSeconds(tmp.get(ChronoField.OFFSET_SECONDS)).normalized()
+    // Instant.from gives us an instance in UTC
     return temporalOfInstant(targetType, Instant.from(tmp), zone)
   }
 
   private fun temporalOfInstant(targetType: KClass<*>, value: Instant, zoneId: ZoneId? = null): Any {
     val zone = zoneId ?: retrieveZoneId(value)
-    @Suppress("MagicNumber")
-    val msOffset = zone.rules.getOffset(value).totalSeconds * 1000
     return when (targetType) {
-      Timestamp::class -> Timestamp(value.toEpochMilli() + msOffset)
-      Date::class -> Date(value.toEpochMilli() + msOffset)
+      Timestamp::class -> Timestamp.from(Timestamp(value.toEpochMilli()).toInstant().atZone(zone).toInstant())
+      Date::class -> Date.from(Date(value.toEpochMilli()).toInstant().atZone(zone).toInstant())
       LocalDate::class -> LocalDate.ofInstant(value, zone)
       LocalTime::class -> LocalTime.ofInstant(value, zone)
       LocalDateTime::class -> LocalDateTime.ofInstant(value, zone)
       ZonedDateTime::class -> ZonedDateTime.ofInstant(value, zone)
       OffsetTime::class -> OffsetTime.ofInstant(value, zone)
       OffsetDateTime::class -> OffsetDateTime.ofInstant(value, zone)
-      else -> throw UnsupportedOperationException(
+      else -> throw IllegalArgumentException(
         "No temporal converter defined to convert instant '$value' to type '$targetType'"
       )
     }
