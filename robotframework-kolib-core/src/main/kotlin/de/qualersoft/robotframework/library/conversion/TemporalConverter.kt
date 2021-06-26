@@ -20,7 +20,7 @@ import kotlin.reflect.full.isSuperclassOf
 object TemporalConverter {
 
   private const val MIN_NANO_WIDTH = 1
-  private const val MAX_NANO_WIDTH = 1
+  private const val MAX_NANO_WIDTH = 6
   private const val DEFAULT_YEAR = 1900L
   private const val DEFAULT_MONTH = 1L
   private const val DEFAULT_DAY = 1L
@@ -32,24 +32,24 @@ object TemporalConverter {
     DateTimeFormatterBuilder()
       // Date stuff
       .optionalStart()
-      .appendPattern("yyyy-MM-dd")
+        .appendPattern("yyyy-MM-dd")
       .optionalEnd()
       .optionalStart()
-      .appendPattern("'T'")
+        .appendPattern("'T'")
       .optionalEnd()
       .optionalStart()
-      .appendPattern(" ")
+        .appendPattern(" ")
       .optionalEnd()
       // Time stuff
       .optionalStart()
-      .appendPattern("HH:mm")
-      .optionalStart()
-      .appendPattern(":ss")
-      .optionalStart()
-      .appendPattern(".")
-      .appendFraction(ChronoField.NANO_OF_SECOND, MIN_NANO_WIDTH, MAX_NANO_WIDTH, false)
-      .optionalEnd()
-      .optionalEnd()
+        .appendPattern("HH:mm")
+        .optionalStart()
+          .appendPattern(":ss")
+          .optionalStart()
+            .appendPattern(".")
+            .appendFraction(ChronoField.NANO_OF_SECOND, MIN_NANO_WIDTH, MAX_NANO_WIDTH, false)
+          .optionalEnd()
+        .optionalEnd()
       .optionalEnd()
       // Zone stuff
       .optionalStart()
