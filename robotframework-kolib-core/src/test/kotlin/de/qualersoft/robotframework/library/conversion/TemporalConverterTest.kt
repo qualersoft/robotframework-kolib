@@ -24,7 +24,7 @@ class TemporalConverterTest {
 
   companion object {
     @JvmStatic
-    fun dateProvider() = Stream.of(
+    fun dateProvider(): Stream<Arguments> = Stream.of(
       Arguments.of(
         Timestamp(buildUtcDate(2021, 2, 1, 0, 0, 0).toEpochMilli()),
         Date::class,
@@ -101,14 +101,32 @@ class TemporalConverterTest {
         "2021-01-08 09:53:36+02:00",
         ZonedDateTime::class,
         ZonedDateTime.ofInstant(buildUtcDate(2021, 1, 8, 7, 53, 36), ZoneOffset.ofHours(2))
+      ),
+      Arguments.of(
+        "2021-09-12T15:47:05.123",
+        LocalDateTime::class,
+        LocalDateTime.ofInstant(buildUtcDate(2021, 9, 12, 15, 47, 5, 123), ZoneOffset.UTC)
+      ),
+      Arguments.of(
+        "2021-09-15T15:47:05",
+        LocalDateTime::class,
+        LocalDateTime.ofInstant(buildUtcDate(2021, 9, 15, 15, 47, 5), ZoneOffset.UTC)
       )
     )
 
-    private fun buildUtcDate(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0, sec: Int = 0): Instant =
+    private fun buildUtcDate(
+      year: Int,
+      month: Int,
+      day: Int,
+      hour: Int = 0,
+      minute: Int = 0,
+      sec: Int = 0,
+      millis: Int = 0
+    ): Instant =
       Calendar.Builder()
         .setTimeZone(TimeZone.getTimeZone("UTC"))
         .setDate(year, month - 1, day)
-        .setTimeOfDay(hour, minute, sec)
+        .setTimeOfDay(hour, minute, sec, millis)
         .build().toInstant()
   }
 
