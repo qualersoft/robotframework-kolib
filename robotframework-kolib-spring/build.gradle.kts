@@ -1,11 +1,9 @@
 plugins {
   kotlin("jvm")
-  id("org.jetbrains.dokka")
 
   id("io.spring.dependency-management")
 
   `java-library`
-  `maven-publish`
 }
 
 dependencies {
