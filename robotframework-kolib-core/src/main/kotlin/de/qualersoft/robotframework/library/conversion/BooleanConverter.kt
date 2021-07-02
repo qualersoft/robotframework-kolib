@@ -1,15 +1,16 @@
 package de.qualersoft.robotframework.library.conversion
 
 object BooleanConverter {
+  private val TRUES = listOf("yes", "true", "on", "ok")
+  private val FALSES = listOf("", "no", "false", "off", "nok")
 
   fun convertToBoolean(value: Any): Any = when (value) {
     is String -> booleanOfString(value)
     is Number -> booleanOfNumber(value)
-    else -> throw IllegalArgumentException("Unexpected type for value <$value>! Only Numbers and some Strings are allowed.")
+    else -> throw IllegalArgumentException(
+      "Unexpected type for value <$value>! Only Numbers and some Strings are allowed."
+    )
   }
-
-  private val TRUES = listOf("yes", "true", "on", "ok")
-  private val FALSES = listOf("", "no", "false", "off", "nok")
 
   private fun booleanOfString(value: String): Boolean {
     val normalized = value.trim()
