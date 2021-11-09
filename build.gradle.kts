@@ -154,10 +154,14 @@ subprojects {
           name = "gh-qualersoft-kolib"
           url = uri("https://maven.pkg.github.com/qualersoft/robotframework-kolib")
           credentials {
-            username = (project.findProperty("publish.gh.qualersoft.rfkolib.gpr.usr") ?:
-              System.getenv("USERNAME"))?.toString()
-            password = (project.findProperty("publish.gh.qualersoft.rfkolib.gpr.key") ?:
-              System.getenv("TOKEN"))?.toString()
+            username = (
+              project.findProperty("publish.gh.qualersoft.rfkolib.gpr.usr")
+                ?: System.getenv("USERNAME")
+              )?.toString()
+            password = (
+              project.findProperty("publish.gh.qualersoft.rfkolib.gpr.key")
+                ?: System.getenv("TOKEN")
+              )?.toString()
           }
         }
       }
