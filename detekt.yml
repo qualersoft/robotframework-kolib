@@ -231,7 +231,7 @@ formatting:
   Filename:
     active: true
   FinalNewline:
-    active: true
+    active: false
     autoCorrect: false
     insertFinalNewLine: false
   ImportOrdering:
@@ -544,7 +544,7 @@ style:
   NestedClassesVisibility:
     active: false
   NewLineAtEndOfFile:
-    active: false
+    active: true
   NoTabs:
     active: false
   OptionalAbstractKeyword:
