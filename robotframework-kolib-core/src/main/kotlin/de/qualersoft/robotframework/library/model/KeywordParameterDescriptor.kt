@@ -6,7 +6,8 @@ import de.qualersoft.robotframework.library.conversion.EnumConverter
 import de.qualersoft.robotframework.library.conversion.NumberConverter
 import de.qualersoft.robotframework.library.conversion.TemporalConverter
 import java.time.temporal.Temporal
-import java.util.*
+import java.util.Date
+import java.util.Optional
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KVisibility

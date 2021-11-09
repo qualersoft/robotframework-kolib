@@ -53,15 +53,15 @@ allprojects {
         entry("kotest-property-jvm")
       }
 
-      dependency(group = "org.robotframework", name = "robotframework", version = "3.2.2")
+      dependency(group = "org.robotframework", name = "robotframework", version = "4.0.1")
 
-      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
+      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.6")
 
       dependencySet(group = "org.springframework.boot", version = "2.4.4") {
         entry("spring-boot-starter")
       }
 
-      //add groovy to allow spring bean definition in groovy-style
+      // add groovy to allow spring bean definition in groovy-style
       dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.7")
     }
   }
@@ -141,9 +141,9 @@ subprojects {
 
   tasks.withType<JacocoReport> {
     reports {
-      xml.isEnabled = true
-      html.isEnabled = true
-      csv.isEnabled = false
+      xml.required.set(true)
+      html.required.set(true)
+      csv.required.set(false)
     }
   }
 
@@ -154,8 +154,10 @@ subprojects {
           name = "gh-qualersoft-kolib"
           url = uri("https://maven.pkg.github.com/qualersoft/robotframework-kolib")
           credentials {
-            username = (project.findProperty("publish.gh.qualersoft.rfkolib.gpr.usr") ?: System.getenv("USERNAME"))?.toString()
-            password = (project.findProperty("publish.gh.qualersoft.rfkolib.gpr.key") ?: System.getenv("TOKEN"))?.toString()
+            username = (project.findProperty("publish.gh.qualersoft.rfkolib.gpr.usr") ?:
+              System.getenv("USERNAME"))?.toString()
+            password = (project.findProperty("publish.gh.qualersoft.rfkolib.gpr.key") ?:
+              System.getenv("TOKEN"))?.toString()
           }
         }
       }
@@ -174,22 +176,14 @@ subprojects {
   }
 }
 
-val jMerge = tasks.register<JacocoMerge>("jacocoMerge") {
-  subprojects.forEach {
-    executionData(it.tasks.withType<Test>())
-  }
-}
-
 tasks.register<JacocoReport>("jacocoRootReport") {
-  dependsOn(jMerge)
   subprojects.forEach {
     val srcDirs = it.sourceSets.main.get().allSource.srcDirs
     additionalSourceDirs.from(srcDirs)
     sourceDirectories.from(srcDirs)
     classDirectories.from(it.sourceSets.main.get().output)
-    
+    executionData(it.tasks.withType<Test>())
   }
-  executionData.from(jMerge.get().destinationFile)
 }
 
 tasks.register("updateVersion") {
@@ -206,7 +200,7 @@ tasks.register("updateVersion") {
     var newVersion = project.findProperty("newVersion") as String?
       ?: throw IllegalArgumentException(
         "No `newVersion` specified!" +
-            " Usage: ./gradlew updateVersion -PnewVersion=<version>"
+          " Usage: ./gradlew updateVersion -PnewVersion=<version>"
       )
 
     if (newVersion.contains("snapshot", true)) {

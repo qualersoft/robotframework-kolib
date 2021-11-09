@@ -231,7 +231,7 @@ formatting:
   Filename:
     active: true
   FinalNewline:
-    active: false
+    active: true
     autoCorrect: false
     insertFinalNewLine: false
   ImportOrdering:
@@ -240,7 +240,7 @@ formatting:
   Indentation:
     active: false
     autoCorrect: true
-    indentSize: 4
+    indentSize: 2
     continuationIndentSize: 4
   MaximumLineLength:
     active: true
@@ -625,4 +625,4 @@ style:
   WildcardImport:
     active: true
     excludes: ['**/*test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
-    excludeImports: ['java.util.*', 'kotlinx.android.synthetic.*']
+    excludeImports: ['kotlinx.android.synthetic.*']
