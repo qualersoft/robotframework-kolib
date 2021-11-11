@@ -3,7 +3,9 @@ package de.qualersoft.robotframework.library.model
 import de.qualersoft.robotframework.library.annotation.Keyword
 import java.time.Duration
 import java.time.temporal.Temporal
-import java.util.*
+import java.util.Date
+import java.util.Optional
+
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -61,7 +63,7 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
         "bool"
       }
       originType == String::class -> {
-        String::class
+        "str"
       }
       originType == Date::class || originType.isSubclassOf(Temporal::class) -> {
         "datetime"
@@ -204,7 +206,7 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
             result[desc.name] = Optional.of(newMap)
           } catch (ex: ClassCastException) {
             validationErrors += "Unable to extend existing kwArg-map: ${kwEntry.get()}" +
-                                " with remaining kwArgs $remainingKwArgs! $ex"
+              " with remaining kwArgs $remainingKwArgs! $ex"
           }
         }
       } else {
@@ -252,9 +254,9 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
    */
   private fun detectDeclaringClass(): KClass<*> {
     val thisArg = function.instanceParameter
-                  ?: throw IllegalArgumentException(
-                    "Keyword annotation may only be placed on member functions! Move function '$name' to a class."
-                  )
+      ?: throw IllegalArgumentException(
+        "Keyword annotation may only be placed on member functions! Move function '$name' to a class."
+      )
     try {
       return thisArg.type.classifier as KClass<*>
     } catch (npe: NullPointerException) {

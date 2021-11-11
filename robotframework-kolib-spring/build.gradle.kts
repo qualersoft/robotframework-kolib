@@ -9,7 +9,7 @@ plugins {
 dependencies {
   api(project(":robotframework-kolib-core"))
 
-  //add groovy to allow spring bean definition in groovy-style
+  // add groovy to allow spring bean definition in groovy-style
   compileOnly(group = "org.codehaus.groovy", name = "groovy")
 
   implementation(kotlin("reflect"))
@@ -20,10 +20,10 @@ dependencies {
     testImplementation(group = "io.kotest", name = it)
   }
 
-  testImplementation(group= "io.github.classgraph", name="classgraph", version="4.8.102")
+  testImplementation(group = "io.github.classgraph", name = "classgraph", version = "4.8.129")
 
-  testImplementation(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
-  testImplementation(group = "org.robotframework", name = "robotframework", version = "4.0.1")
+  testImplementation(group = "ch.qos.logback", name = "logback-classic")
+  testImplementation(group = "org.robotframework", name = "robotframework")
 }
 
 tasks.test {
@@ -41,10 +41,12 @@ tasks.test {
       if (null == suite.parent) { // root suite
         logger.lifecycle("----")
         logger.lifecycle("Test result: ${result.resultType}")
-        logger.lifecycle("Test summary: ${result.testCount} tests, " +
+        logger.lifecycle(
+          "Test summary: ${result.testCount} tests, " +
             "${result.successfulTestCount} succeeded, " +
             "${result.failedTestCount} failed, " +
-            "${result.skippedTestCount} skipped")
+            "${result.skippedTestCount} skipped"
+        )
       }
     }
   })

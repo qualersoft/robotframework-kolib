@@ -2,13 +2,16 @@ package de.qualersoft.robotframework.library.model
 
 import de.qualersoft.robotframework.library.annotation.KwdArg
 import io.kotest.matchers.nulls.beNull
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNot
 import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.types.beInstanceOf
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.converter.JavaTimeConversionPattern
+import java.util.Optional
 import kotlin.reflect.KParameter
 import kotlin.reflect.full.functions
 import kotlin.reflect.full.valueParameters
@@ -233,6 +236,48 @@ class KotlinKeywordParameterDescriptorTest {
   }
   //</editor-fold>
 
+  //<editor-fold desc="Type conversion">
+  @Test
+  fun testInputIntToTargetString() {
+    val desc = getDescriptorFor<PlainFunctionHolderClass>("plainNullableParameter")
+    val actual = desc.convertToTargetType(Optional.of(1))
+
+    assertAll(
+      { actual should beInstanceOf<String>() },
+      { actual shouldBe "1" }
+    )
+  }
+
+  @Test
+  fun testInputIntListToTargetByteArray() {
+    val desc = getDescriptorFor<PlainFunctionHolderClass>("byteArrayArgument")
+    val range = IntRange(1, 8)
+    val actual = desc.convertToTargetType(Optional.of(range.toList()))
+    val expected = ByteArray(8) { (it + 1).toByte() }
+
+    assertAll(
+      { actual should beInstanceOf<ByteArray>() },
+      { actual shouldBe expected }
+    )
+  }
+
+  @Test
+  fun testInputStringToTargetTypeExceptionByFallback() {
+    val desc = getDescriptorFor<PlainFunctionHolderClass>("fallbackArgument")
+    val value = "Test"
+    val expected = Exception(value)
+    val actual = desc.convertToTargetType(Optional.of(value))
+
+    assertAll(
+      { actual should beInstanceOf<Exception>() },
+      { actual shouldBe expected }
+    )
+  }
+  //</editor-fold>
+
+  private inline fun <reified T> getDescriptorFor(method: String, pos: Int = 0) =
+    KeywordParameterDescriptor(getParameterOf<T>(method, pos))
+
   private inline fun <reified T> getParameterOf(method: String, pos: Int = 0): KParameter {
     val kFunction = T::class.functions.first { it.name == method }
     kFunction shouldNot beNull()
@@ -252,6 +297,10 @@ class KotlinKeywordParameterDescriptorTest {
     fun plainNonNullableWithDefault(test: String = "empty") {}
 
     fun plainVararg(vararg tests: String) {}
+
+    fun byteArrayArgument(test: ByteArray) {}
+
+    fun fallbackArgument(test: Exception) {}
   }
 
   @Suppress("unused", "unused_parameter")

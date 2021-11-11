@@ -240,7 +240,7 @@ formatting:
   Indentation:
     active: false
     autoCorrect: true
-    indentSize: 4
+    indentSize: 2
     continuationIndentSize: 4
   MaximumLineLength:
     active: true
@@ -544,7 +544,7 @@ style:
   NestedClassesVisibility:
     active: false
   NewLineAtEndOfFile:
-    active: false
+    active: true
   NoTabs:
     active: false
   OptionalAbstractKeyword:
@@ -625,4 +625,4 @@ style:
   WildcardImport:
     active: true
     excludes: ['**/*test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
-    excludeImports: ['java.util.*', 'kotlinx.android.synthetic.*']
+    excludeImports: ['kotlinx.android.synthetic.*']

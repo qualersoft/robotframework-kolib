@@ -21,6 +21,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import java.util.stream.Stream
+import kotlin.NoSuchElementException
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.functions
 
@@ -197,7 +198,15 @@ class KotlinKeywordDescriptorTest {
     }
     ex.message shouldContain "functions may not abstract! Make 'abstractFun'"
   }
-  
+
+  @Test
+  fun testUnannotatedFunThrows() {
+    val fnc = getFunctionBy<ValidationHolderClass>("unannotated")
+    assertThrows<NoSuchElementException> {
+      KeywordDescriptor(fnc)
+    }
+  }
+
   private inline fun <reified T> getFunctionBy(name: String): KFunction<*> {
     val kFunction = T::class.functions.firstOrNull { it.name == name }
     kFunction shouldNot beNull()
@@ -227,7 +236,7 @@ class KotlinKeywordDescriptorTest {
       Arguments.of("Double", "float"),
       Arguments.of("BigDecimal", "class java.math.BigDecimal"),
       Arguments.of("Boolean", "bool"),
-      Arguments.of("String", "class kotlin.String"),
+      Arguments.of("String", "str"),
       Arguments.of("Date", "datetime"),
       Arguments.of("Temporal", "datetime"),
       Arguments.of("Duration", "timedelta"),
@@ -251,24 +260,34 @@ class KotlinKeywordDescriptorTest {
         |
         |First line second line""".trimMargin()
       ),
-      Arguments.of("multiLineSummaryWithEmptyLine", """*Summary*:
+      Arguments.of(
+        "multiLineSummaryWithEmptyLine", """*Summary*:
         |
-        |First line third line""".trimMargin()),
-      Arguments.of("multiLineSummaryWithEmptySpacedLine", """*Summary*:
+        |First line third line""".trimMargin()
+      ),
+      Arguments.of(
+        "multiLineSummaryWithEmptySpacedLine", """*Summary*:
         |
-        |First line after ws line""".trimMargin()),
-      Arguments.of("singleDetailsLine", """*Details*:
+        |First line after ws line""".trimMargin()
+      ),
+      Arguments.of(
+        "singleDetailsLine", """*Details*:
         |
-        |First line""".trimMargin()),
-      Arguments.of("multiDetailsLine", """*Details*:
+        |First line""".trimMargin()
+      ),
+      Arguments.of(
+        "multiDetailsLine", """*Details*:
         |
         |First line
-        |Second line""".trimMargin()),
-      Arguments.of("multiDetailsLineWithEmptyLine", """*Details*:
+        |Second line""".trimMargin()
+      ),
+      Arguments.of(
+        "multiDetailsLineWithEmptyLine", """*Details*:
         |
         |First line
         |
-        |Third line""".trimMargin())
+        |Third line""".trimMargin()
+      )
     )
   }
 
@@ -424,11 +443,17 @@ class KotlinKeywordDescriptorTest {
   @Suppress("unused")
   abstract class ValidationHolderClass {
     @Keyword
-    private fun privateFun() {}
+    private fun privateFun() {
+    }
+
     @Keyword
-    protected fun protectedFun() {}
+    protected fun protectedFun() {
+    }
+
     @Keyword
     abstract fun abstractFun()
+
+    fun unannotated() {}
   }
 
   @Suppress("unused")
