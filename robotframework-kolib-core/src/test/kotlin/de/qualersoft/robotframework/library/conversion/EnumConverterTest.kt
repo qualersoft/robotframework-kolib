@@ -57,6 +57,16 @@ class EnumConverterTest {
   }
 
   @Test
+  fun testMultiMatchesOnNormalizationButOneExact() {
+    val res = EnumConverter.convertToEnum(MyColor::class, "A_ B")
+    val expected = MyColor.`A_ B`
+    assertAll(
+      { res should beInstanceOf<MyColor>() },
+      { res shouldBe expected }
+    )
+  }
+
+  @Test
   fun testMultipleCaseSensitiveEnums() {
     val ex = assertThrows<ClassCastException> {
       EnumConverter.convertToEnum(MyColor::class, "Cd")

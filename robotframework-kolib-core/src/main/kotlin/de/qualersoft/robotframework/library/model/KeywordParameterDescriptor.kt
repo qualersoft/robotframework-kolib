@@ -181,7 +181,6 @@ class KeywordParameterDescriptor(val param: KParameter) {
         }
         // last hope we find a constructor in target type that match the value type
         else -> type.constructors.single {
-          it.isAccessible &&
             it.visibility == KVisibility.PUBLIC &&
             it.parameters.size == 1 &&
             (it.parameters[0].type.classifier as KClass<*>).isSuperclassOf(value::class)
