@@ -14,7 +14,6 @@ import kotlin.reflect.KVisibility
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
-import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.safeCast
 
 class KeywordParameterDescriptor(val param: KParameter) {
