@@ -14,12 +14,15 @@ dependencies {
 
   implementation(kotlin("reflect"))
 
-  api(group = "org.springframework.boot", name = "spring-boot-starter")
+  implementation(group = "org.springframework.boot", name = "spring-boot-starter-logging")
+  implementation(group = "jakarta.annotation", name = "jakarta.annotation-api", version = "1.3.5")
+  api(group = "org.springframework.boot", name = "spring-boot")
 
   listOf("kotest-runner-junit5-jvm", "kotest-assertions-core").forEach {
     testImplementation(group = "io.kotest", name = it)
   }
 
+  testImplementation(group = "org.yaml", name = "snakeyaml", version = "1.29")
   testImplementation(group = "io.github.classgraph", name = "classgraph", version = "4.8.129")
 
   testImplementation(group = "ch.qos.logback", name = "logback-classic")
