@@ -14,4 +14,4 @@ import org.springframework.context.annotation.FilterType
     )
   ]
 )
-annotation class SpringLibMarker()
+annotation class SpringLibMarker
