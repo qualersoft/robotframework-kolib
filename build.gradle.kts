@@ -58,8 +58,9 @@ allprojects {
 
       dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.6")
 
-      dependencySet(group = "org.springframework.boot", version = "2.4.4") {
-        entry("spring-boot-starter")
+      dependencySet(group = "org.springframework.boot", version = "2.5.6") {
+        entry("spring-boot")
+        entry("spring-boot-starter-logging")
       }
 
       // add groovy to allow spring bean definition in groovy-style
@@ -233,6 +234,7 @@ subprojects {
 tasks.register<JacocoReport>("jacocoRootReport") {
   group = "verification"
   subprojects.forEach {
+    group = "verification"
     val srcDirs = it.sourceSets.main.get().allSource.srcDirs
     additionalSourceDirs.from(srcDirs)
     sourceDirectories.from(srcDirs)
