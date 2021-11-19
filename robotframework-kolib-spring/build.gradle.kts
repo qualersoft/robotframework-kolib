@@ -15,7 +15,7 @@ dependencies {
   implementation(kotlin("reflect"))
 
   implementation(group = "org.springframework.boot", name = "spring-boot-starter-logging")
-  implementation(group = "jakarta.annotation", name = "jakarta.annotation-api", version = "1.3.5")
+  implementation(group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.0.0")
   api(group = "org.springframework.boot", name = "spring-boot")
 
   listOf("kotest-runner-junit5-jvm", "kotest-assertions-core").forEach {
@@ -26,6 +26,7 @@ dependencies {
   testImplementation(group = "io.github.classgraph", name = "classgraph", version = "4.8.132")
 
   testImplementation(group = "ch.qos.logback", name = "logback-classic")
+  testImplementation(group = "javax.annotation", name = "javax.annotation-api", version = "1.3.2")
   testImplementation(group = "org.robotframework", name = "robotframework")
 }
 
