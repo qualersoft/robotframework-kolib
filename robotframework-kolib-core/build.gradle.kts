@@ -38,3 +38,14 @@ tasks.test {
     }
   })
 }
+
+publishing {
+  publications {
+    named<MavenPublication>("maven") {
+      pom {
+        name.set("Kolib core")
+        description.set("Base library for binding to robot framework.")
+      }
+    }
+  }
+}

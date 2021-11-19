@@ -17,8 +17,9 @@ plugins {
   jacoco
 
   `maven-publish`
+  signing
 
-  id("com.github.ben-manes.versions") version "0.38.0"
+  id("com.github.ben-manes.versions") version "0.39.0"
 
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
@@ -32,7 +33,7 @@ allprojects {
   apply(plugin = "idea")
   apply(plugin = "io.spring.dependency-management")
 
-  group = "de.qualersoft.robotframework"
+  group = "io.github.qualersoft.robotframework"
 
   repositories {
     mavenCentral()
@@ -53,7 +54,7 @@ allprojects {
         entry("kotest-property-jvm")
       }
 
-      dependency(group = "org.robotframework", name = "robotframework", version = "4.0.1")
+      dependency(group = "org.robotframework", name = "robotframework", version = "4.1.2")
 
       dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.6")
 
@@ -67,6 +68,8 @@ allprojects {
   }
 }
 
+val isReleaseVersion = version.toString().endsWith("snapshot", true)
+
 subprojects {
   apply(plugin = "org.jetbrains.kotlin.jvm")
   apply(plugin = "org.jetbrains.kotlin.plugin.spring")
@@ -77,6 +80,7 @@ subprojects {
   apply(plugin = "org.jetbrains.dokka")
 
   apply(plugin = "maven-publish")
+  apply(plugin = "signing")
 
   jacoco {
     toolVersion = "0.8.7"
@@ -89,12 +93,14 @@ subprojects {
   configure<DetektExtension> {
     allRules = true
     config = files("$rootDir/detekt.yml")
-    input = files("src/main/kotlin")
+    source = files("src/main/kotlin")
+  }
 
+  tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     reports {
-      html.enabled = true
-      xml.enabled = true
-      txt.enabled = false
+      html.required.set(true)
+      xml.required.set(true)
+      txt.required.set(false)
     }
   }
 
@@ -121,7 +127,7 @@ subprojects {
   }
 
   tasks.getByName<Jar>("javadocJar") {
-    dependsOn.add(dokkaJavadoc)
+    dependsOn(dokkaJavadoc)
   }
 
   tasks.jar {
@@ -154,18 +160,25 @@ subprojects {
           name = "gh-qualersoft-kolib"
           url = uri("https://maven.pkg.github.com/qualersoft/robotframework-kolib")
           credentials {
-            username = (
-              project.findProperty("publish.gh.qualersoft.rfkolib.gpr.usr")
-                ?: System.getenv("USERNAME")
-              )?.toString()
-            password = (
-              project.findProperty("publish.gh.qualersoft.rfkolib.gpr.key")
-                ?: System.getenv("TOKEN")
-              )?.toString()
+            val ghUsrnm: String? by project
+            val ghToken: String? by project
+            username = ghUsrnm
+            password = ghToken
+          }
+        }
+        maven {
+          name = "central"
+          val path = if(isReleaseVersion) { "content/repositories/snapshots" } else { "service/local/staging/deploy/maven2" }
+          url = uri("https://s01.oss.sonatype.org/$path/")
+          credentials {
+            val mvnCntrlUsr: String? by project
+            val mvnCntrlPswd: String? by project
+            username = mvnCntrlUsr
+            password = mvnCntrlPswd
           }
         }
       }
-      create<MavenPublication>("maven") {
+      register<MavenPublication>("maven") {
         from(components["java"])
         versionMapping {
           usage("java-api") {
@@ -175,12 +188,50 @@ subprojects {
             fromResolutionResult()
           }
         }
+        pom {
+          url.set("https://github.com/qualersoft/robotframework-kolib")
+          licenses {
+            license {
+              name.set("The Apache License, Version 2.0")
+              url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+              distribution.set("repo")
+            }
+          }
+          developers {
+            developer {
+              id.set("mathze")
+              name.set("mathze")
+              email.set("270275+mathze@users.noreply.github.com")
+              url.set("https://github.com/mathze")
+              organization.set("QualerSoft")
+              organizationUrl.set("https://qualersoft.github.io/")
+            }
+          }
+          scm {
+            url.set("https://github.com/qualersoft/robotframework-kolib.git")
+            connection.set("scm:git:git://github.com/qualersoft/robotframework-kolib.git")
+            developerConnection.set("scm:git:git@github.com:qualersoft/robotframework-kolib.git")
+            tag.set("HEAD")
+          }
+        }
       }
     }
+  }
+
+  signing {
+    val signingKey: String? by project
+    val signingPassword: String? by project
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign(publishing.publications["maven"])
+  }
+
+  tasks.withType<Sign> {
+    onlyIf { isReleaseVersion }
   }
 }
 
 tasks.register<JacocoReport>("jacocoRootReport") {
+  group = "verification"
   subprojects.forEach {
     val srcDirs = it.sourceSets.main.get().allSource.srcDirs
     additionalSourceDirs.from(srcDirs)

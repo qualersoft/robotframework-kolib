@@ -20,7 +20,7 @@ dependencies {
     testImplementation(group = "io.kotest", name = it)
   }
 
-  testImplementation(group = "io.github.classgraph", name = "classgraph", version = "4.8.129")
+  testImplementation(group = "io.github.classgraph", name = "classgraph", version = "4.8.132")
 
   testImplementation(group = "ch.qos.logback", name = "logback-classic")
   testImplementation(group = "org.robotframework", name = "robotframework")
@@ -50,4 +50,15 @@ tasks.test {
       }
     }
   })
+}
+
+publishing {
+  publications {
+    named<MavenPublication>("maven") {
+      pom {
+        name.set("Kolib spring")
+        description.set("Library using spring for keyword discovery.")
+      }
+    }
+  }
 }
