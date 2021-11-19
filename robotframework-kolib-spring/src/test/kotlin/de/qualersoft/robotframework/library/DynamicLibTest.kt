@@ -94,7 +94,7 @@ class DynamicLibTest : AnnotationSpec() {
   private fun runRobot(test: String): String {
     val suite = '"' + File(ResourceUtils.getURL("classpath:FunctionCallTests.robot").file).absolutePath + '"'
     val classpathUrls = ClassGraph().classpathFiles.filter { !it.path.contains("\\wrapper\\dists\\gradle-") }
-    val classes = '"' + classpathUrls.joinToString(separator = ";") { it.absolutePath } + '"'
+    val classes = '"' + classpathUrls.joinToString(separator = File.pathSeparator) { it.absolutePath } + '"'
     val cmdArr =
       arrayOf("java", "-cp", classes, "org.robotframework.RobotFramework", "run", "--test", '"' + test + '"', suite)
     val proc = Runtime.getRuntime().exec(cmdArr)
