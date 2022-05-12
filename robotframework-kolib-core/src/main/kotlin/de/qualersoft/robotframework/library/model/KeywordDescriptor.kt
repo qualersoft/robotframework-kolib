@@ -173,7 +173,7 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
     validationErrors.addAll(consumeKwArgs(namedArgs, result))
 
     // 5. in case target function has kwArgs, but it wasn't given in rf (kwargs van be omitted) we insert `null`
-    if (kwArgs.isEmpty() && 
+    if (kwArgs.isEmpty() &&
       // same logic as for varargs only fill up with 'null' if parameter is mandatory
       orderedParams.lastOrNull()?.let { it.kind == ParameterKind.KWARG && !it.optional } == true
     ) {
