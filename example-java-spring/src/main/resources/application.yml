@@ -1,0 +1,3 @@
+countriesApi:
+  baseUrl: https://restcountries.com/
+  version: v3.1
