@@ -58,7 +58,7 @@ tasks {
     dependsOn(jar)
     libdoc {
       outputDirectory.set(buildDir.resolve("doc/libdoc/lib"))
-      outputFile.set(file("${libName}.html"))
+      outputFile.set(file("$libName.html"))
       libraryOrResourceFile = libName
     }
   }
@@ -66,7 +66,7 @@ tasks {
     dependsOn(jar)
     libdoc {
       outputDirectory.set(buildDir.resolve("doc/libdoc/lib"))
-      outputFile.set(file("${libName}.libspec"))
+      outputFile.set(file("$libName.libspec"))
 
       libraryOrResourceFile = libName
     }

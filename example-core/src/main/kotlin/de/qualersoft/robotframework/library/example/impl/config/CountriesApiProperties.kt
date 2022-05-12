@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConfigurationProperties("countries-api")
 data class CountriesApiProperties @ConstructorBinding constructor(val baseUrl: String, val version: String = "v3") {
   fun baseEndpoint(): String {
-    return (if (!baseUrl.endsWith("/")) "$baseUrl/"
-    else baseUrl) + "$version/"
+    return (if (!baseUrl.endsWith("/")) "$baseUrl/" else baseUrl) + "$version/"
   }
 }

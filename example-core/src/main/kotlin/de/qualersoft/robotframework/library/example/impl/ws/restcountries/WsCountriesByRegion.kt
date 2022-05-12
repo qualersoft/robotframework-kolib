@@ -12,9 +12,9 @@ class WsCountriesByRegion(countryProps: CountriesApiProperties) : WsRestCountrie
     region = country.region
   }
 
-  override fun getRequestUrl(): String = "${baseUrl}/region/{region}"
+  override fun getRequestUrl(): String = "$baseUrl/region/{region}"
 
-  override fun getPathParameters(): Map<String, String> = HashMap<String,String>().apply {
+  override fun getPathParameters(): Map<String, String> = HashMap<String, String>().apply {
     region?.let { this["region"] = it }
   }
 }

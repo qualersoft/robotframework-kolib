@@ -12,9 +12,9 @@ class WsCountriesByCurrency(countryProps: CountriesApiProperties) : WsRestCountr
     currency = country.currencies?.firstOrNull()?.code
   }
 
-  override fun getRequestUrl(): String = "${baseUrl}/currency/{region}"
+  override fun getRequestUrl(): String = "$baseUrl/currency/{region}"
 
-  override fun getPathParameters(): Map<String, String> = HashMap<String,String>().apply {
+  override fun getPathParameters(): Map<String, String> = HashMap<String, String>().apply {
     currency?.let { this["region"] = it }
   }
 }
