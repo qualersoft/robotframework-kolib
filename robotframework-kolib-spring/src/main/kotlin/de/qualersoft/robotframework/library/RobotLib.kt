@@ -164,13 +164,13 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
    * Meant to be overwritten. Default impl returns empty string
    */
   @SuppressWarnings("FunctionOnlyReturningConstant")
-  protected fun getLibraryGeneralDocumentation(): String = ""
+  protected open fun getLibraryGeneralDocumentation(): String = ""
 
   /**
    * Meant to be overwritten. Default impl returns empty string
    */
   @SuppressWarnings("FunctionOnlyReturningConstant")
-  protected fun getLibraryUsageDocumentation(): String = ""
+  protected open fun getLibraryUsageDocumentation(): String = ""
 
   private fun findKeywordBeans(): List<KClass<*>> = ctx.beanDefinitionNames.mapNotNull {
     val bd = ctx.beanFactory.getBeanDefinition(it)
