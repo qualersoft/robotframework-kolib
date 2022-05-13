@@ -5,7 +5,6 @@ import java.time.Duration
 import java.time.temporal.Temporal
 import java.util.Date
 import java.util.Optional
-
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -144,7 +143,18 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
       }
     }
 
-    // 2. we fill up kwArgs with named args
+    // 2. in case target function has varargs, but it wasn't given in rf (varargs can be omitted) we insert `null`
+    if (args.size < orderedParams.size) {
+      val desc = orderedParams[args.size]
+      // in kotlin you can (and should) define default value (-> vararg is optional),
+      // so we don't override and may violate null-safety!
+      if ((desc.kind == ParameterKind.VARARG) && !desc.optional) {
+        result[desc.name] = Optional.of(emptyList<Any?>())
+      }
+      // else nothing to do
+    }
+
+    // 3. we fill up kwArgs with named args
     val argsMap = orderedParams.associateBy { it.name }
     val namedArgs = kwArgs.toMutableMap()
     for (k in kwArgs.keys) {
@@ -159,8 +169,17 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
       }
     }
 
-    // 3. if kwArgs (namedArgs) left find the appropriate parameter
+    // 4. if kwArgs (namedArgs) left find the appropriate parameter
     validationErrors.addAll(consumeKwArgs(namedArgs, result))
+
+    // 5. in case target function has kwArgs, but it wasn't given in rf (kwargs van be omitted) we insert `null`
+    if (kwArgs.isEmpty() &&
+      // same logic as for varargs only fill up with 'null' if parameter is mandatory
+      orderedParams.lastOrNull()?.let { it.kind == ParameterKind.KWARG && !it.optional } == true
+    ) {
+      val last = orderedParams.last()
+      result[last.name] = Optional.ofNullable(mapOf<String, Any?>())
+    }
 
     if (validationErrors.isNotEmpty()) {
       throw IllegalArgumentException(

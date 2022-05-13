@@ -128,7 +128,7 @@ class RobotLibTest : FreeSpec({
     val origin = getLibTestKwdNames()
     origin shouldContain "subpackageFunction"
   }
-  
+
   "Get keyword types of noargs keyword" {
     val sut = RobotLib(root = RobotLibTest::class)
     val actual = sut.getKeywordTypes("publicKeywordWithNameFromAnnotation")
@@ -140,8 +140,7 @@ class RobotLibTest : FreeSpec({
     val actual = sut.getKeywordTypes("withAnnotatedArgsNoReturn")
     actual shouldBe mapOf("first" to "str", "second" to "int")
   }
-  
-  
+
   "Get keyword source" {
     val sut = RobotLib(root = RobotLibTest::class)
     val actual = sut.getKeywordSource("withAnnotatedArgsNoReturn")
@@ -149,8 +148,8 @@ class RobotLibTest : FreeSpec({
     actual should endWith(KeywordArgs::class.qualifiedName!!.replace('.', File.separatorChar))
   }
 })
-fun getLibTestKwdNames() = RobotLib(root = RobotLibTest::class).getKeywordNames()
 
+fun getLibTestKwdNames() = RobotLib(root = RobotLibTest::class).getKeywordNames()
 
 //<editor-fold desc="keyword discovery test classes">
 @Suppress("unused")
@@ -233,7 +232,7 @@ open class KeywordArgs {
   }
 
   @Keyword
-  fun withVarArg(@KwdArg(kind=ParameterKind.VARARG) variable: List<String>?) {
+  fun withVarArg(@KwdArg(kind = ParameterKind.VARARG) variable: List<String>?) {
   }
 }
 

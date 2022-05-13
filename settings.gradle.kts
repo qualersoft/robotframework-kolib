@@ -1,13 +1,15 @@
 pluginManagement {
-  val kotlinVersion = "1.5.31"
+  val kotlinVersion = "1.6.21"
   repositories {
     gradlePluginPortal()
     mavenCentral()
   }
   plugins {
+    // kotlin
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
 
+    // spring
     id("org.springframework.boot") version "2.4.5"
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
 
@@ -20,4 +22,7 @@ pluginManagement {
   }
 }
 
-include(":robotframework-kolib-core", ":robotframework-kolib-spring")
+include(
+  ":robotframework-kolib-core", ":robotframework-kolib-spring",
+  ":example-core", ":example-kotlin-spring", ":example-java-spring"
+)

@@ -1,8 +1,8 @@
-import java.util.Properties
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.spring.gradle.dependencymanagement.dsl.DependencySetHandler
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.Properties
 
 plugins {
   java
@@ -47,6 +47,11 @@ allprojects {
       fun dependencySet(group: String, version: String, action: ((DependencySetHandler).() -> Unit)) =
         dependencySet(mapOf("group" to group, "version" to version), action)
 
+      dependency(group = "javax.inject", name = "javax.inject", version = "1")
+      dependency(group = "javax.annotation", name = "javax.annotation-api", version = "1.3.2")
+      dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.7.0")
+
+      dependency(group = "org.json", name = "json", version = "20220320")
       dependencySet(group = "io.kotest", version = "4.6.0") {
         entry("kotest-runner-junit5-jvm")
         entry("kotest-assertions-core-jvm")
@@ -55,9 +60,13 @@ allprojects {
 
       dependency(group = "org.robotframework", name = "robotframework", version = "4.0.1")
 
-      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.6")
+      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.11")
 
-      dependencySet(group = "org.springframework.boot", version = "2.5.6") {
+      dependencySet(group = "org.springframework", version = "5.3.20") {
+        entry("spring-web")
+        entry("spring-context")
+      }
+      dependencySet(group = "org.springframework.boot", version = "2.6.7") {
         entry("spring-boot")
         entry("spring-boot-starter-logging")
       }
@@ -69,6 +78,8 @@ allprojects {
 }
 
 subprojects {
+  if (name.startsWith("example")) return@subprojects // configure example projects separately
+
   apply(plugin = "org.jetbrains.kotlin.jvm")
   apply(plugin = "org.jetbrains.kotlin.plugin.spring")
 
@@ -104,16 +115,19 @@ subprojects {
     finalizedBy(tasks.withType<JacocoReport>())
   }
 
+  val javaVersion = JavaVersion.VERSION_11
   tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.toString()
-      apiVersion = "1.5"
+      jvmTarget = javaVersion.toString()
+      apiVersion = "1.6"
     }
   }
 
   java {
     withSourcesJar()
     withJavadocJar()
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
   }
 
   val dokkaJavadoc: DokkaTask by tasks
@@ -183,6 +197,7 @@ subprojects {
 
 tasks.register<JacocoReport>("jacocoRootReport") {
   subprojects.forEach {
+    if (it.name.startsWith("example")) return@forEach
     group = "verification"
     val srcDirs = it.sourceSets.main.get().allSource.srcDirs
     additionalSourceDirs.from(srcDirs)
