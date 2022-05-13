@@ -62,8 +62,8 @@ allprojects {
 
       dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.11")
 
-      dependency(group = "org.springframework", name = "spring-web", version = "5.3.12")
-      dependencySet(group = "org.springframework.boot", version = "2.5.6") {
+      dependency(group = "org.springframework", name = "spring-web", version = "5.3.20")
+      dependencySet(group = "org.springframework.boot", version = "2.6.7") {
         entry("spring-boot")
         entry("spring-boot-starter-logging")
       }
@@ -194,6 +194,7 @@ subprojects {
 
 tasks.register<JacocoReport>("jacocoRootReport") {
   subprojects.forEach {
+    if (it.name.startsWith("example")) return@forEach
     group = "verification"
     val srcDirs = it.sourceSets.main.get().allSource.srcDirs
     additionalSourceDirs.from(srcDirs)
