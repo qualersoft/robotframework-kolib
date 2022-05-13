@@ -62,7 +62,10 @@ allprojects {
 
       dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.11")
 
-      dependency(group = "org.springframework", name = "spring-web", version = "5.3.20")
+      dependencySet(group = "org.springframework", version = "5.3.20") {
+        entry("spring-web")
+        entry("spring-context")
+      }
       dependencySet(group = "org.springframework.boot", version = "2.6.7") {
         entry("spring-boot")
         entry("spring-boot-starter-logging")
