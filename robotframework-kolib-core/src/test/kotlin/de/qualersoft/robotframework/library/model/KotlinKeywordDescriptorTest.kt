@@ -19,9 +19,8 @@ import java.math.BigDecimal
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
+import java.util.Date
 import java.util.stream.Stream
-import kotlin.NoSuchElementException
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.functions
 
@@ -42,6 +41,26 @@ class KotlinKeywordDescriptorTest {
       { desc.robotArguments.first() should haveSize(1) }
     )
   }
+
+  //<editor-fold desc="function name override">
+  @Test
+  fun testFunctionNameCanBeOverwritten() {
+    val desc = getDescriptor<FunctionsHolderClass>("overrideFunctionName")
+    desc.name shouldBe "newName"
+  }
+
+  @Test
+  fun testEmptySuppliedNameIsIgnored() {
+    val desc = getDescriptor<FunctionsHolderClass>("suppliedNameEmpty")
+    desc.name shouldBe "suppliedNameEmpty"
+  }
+
+  @Test
+  fun testBlankSuppliedNameIsIgnored() {
+    val desc = getDescriptor<FunctionsHolderClass>("suppliedNameBlank")
+    desc.name shouldBe "suppliedNameBlank"
+  }
+  //</editor-fold>
 
   @ParameterizedTest(name = "[{index}] {0} -> {1}")
   @MethodSource("typeFactory")
@@ -163,6 +182,17 @@ class KotlinKeywordDescriptorTest {
       |  "ka2": "8"
       |}""".trimMargin()
   }
+  
+  @Test
+  fun testCallWithPosButNoKwArgsGiven() {
+    val res = exec<InvokeHolderClass>(
+      "callWithNamedArgsAndKwargs", listOf("1", "2"), mapOf()
+    )
+    res shouldBe """Result: {
+      |  "a1": "1",
+      |  "a2": "2"
+      |}""".trimMargin()
+  }
   //</editor-fold>
 
   @ParameterizedTest(name = "[{index}] {0}")
@@ -172,6 +202,7 @@ class KotlinKeywordDescriptorTest {
     desc.description shouldBe expected
   }
 
+  //<editor-fold desc="function access and discoverability">
   @Test
   fun testPrivateFunThrows() {
     val fnc = getFunctionBy<ValidationHolderClass>("privateFun")
@@ -206,6 +237,16 @@ class KotlinKeywordDescriptorTest {
       KeywordDescriptor(fnc)
     }
   }
+
+
+  @Test
+  fun testNoKeywordAnnotation() {
+    val fnc = getFunctionBy<ValidationHolderClass>("noKeywordAnnotation")
+    assertThrows<NoSuchElementException> {
+      KeywordDescriptor(fnc)
+    }
+  }
+  //</editor-fold>
 
   private inline fun <reified T> getFunctionBy(name: String): KFunction<*> {
     val kFunction = T::class.functions.firstOrNull { it.name == name }
@@ -296,6 +337,20 @@ class KotlinKeywordDescriptorTest {
 
     @Keyword
     fun simpleFunctionOneArg(test: String) {
+    }
+
+    @Keyword(name = "newName")
+    fun overrideFunctionName() {
+    }
+
+    @Keyword(name = "")
+    fun suppliedNameEmpty() {
+
+    }
+
+    @Keyword(name = " ")
+    fun suppliedNameBlank() {
+
     }
 
     //<editor-fold desc="Type tests">
@@ -399,9 +454,9 @@ class KotlinKeywordDescriptorTest {
     ): String {
       return """Result: {
       |  "a1": "$a1",
-      |  "a2": "$a2",
+      |  "a2": "$a2"
     """.trimMargin() + kwargs.map { "  \"${it.key}\": \"${it.value}\"" }
-        .joinToString(",\n", "\n", "\n}")
+        .let { if (it.isEmpty()) "\n}" else it.joinToString(",\n", ",\n", "\n}") }
     }
   }
 
@@ -454,6 +509,10 @@ class KotlinKeywordDescriptorTest {
     abstract fun abstractFun()
 
     fun unannotated() {}
+
+    @CustomAnnotation
+    fun noKeywordAnnotation() {
+    }
   }
 
   @Suppress("unused")
@@ -463,4 +522,8 @@ class KotlinKeywordDescriptorTest {
     DIRECT_DEBIT,
     ON_DELIVERY
   }
+
+  @Target(AnnotationTarget.FUNCTION)
+  @Retention(AnnotationRetention.RUNTIME)
+  annotation class CustomAnnotation
 }

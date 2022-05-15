@@ -11,7 +11,7 @@ import java.util.stream.Stream
 
 class BooleanConverterTest {
 
-  @ParameterizedTest
+  @ParameterizedTest(name = "<{0}> -> {1}")
   @MethodSource("generateValidData")
   fun testSuccessfulConversion(value: Any, expected: Boolean) {
     val result = BooleanConverter.convertToBoolean(value)

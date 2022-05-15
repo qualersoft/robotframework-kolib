@@ -4,7 +4,7 @@ import de.qualersoft.robotframework.library.annotation.Keyword
 import org.springframework.stereotype.Component
 
 @Component
-open class DummyKeyword {
+class DummyKeyword {
 
   @Keyword
   fun getSimple(): String = "Simple"
