@@ -1,8 +1,10 @@
 package de.qualersoft.robotframework.dummypack
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
+import de.qualersoft.robotframework.library.SpringLibMarker
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 
+@EnableConfigurationProperties
 @ConfigurationPropertiesScan
-@SpringBootApplication
+@SpringLibMarker
 interface DummyMarker

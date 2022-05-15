@@ -5,7 +5,7 @@ import io.kotest.core.spec.style.FreeSpec
 import io.kotest.matchers.collections.shouldContain
 import io.kotest.matchers.shouldBe
 
-class RobotLibPackageTest  : FreeSpec({
+class RobotLibPackageTest : FreeSpec({
   "Found simple keyword" {
     val actual = getPckgKwdNames()
     actual shouldContain "getSimple"
@@ -21,4 +21,4 @@ class RobotLibPackageTest  : FreeSpec({
 })
 
 fun getPckgKwdNames() = RobotLib(root = DummyMarker::class).getKeywordNames()
-fun execPckgKwd(name: String) = RobotLib(root=DummyMarker::class).runKeyword(name, emptyList(), emptyMap())
+fun execPckgKwd(name: String) = RobotLib(root = DummyMarker::class).runKeyword(name, emptyList(), emptyMap())

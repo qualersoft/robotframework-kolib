@@ -1,8 +1,8 @@
-import java.util.Properties
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.spring.gradle.dependencymanagement.dsl.DependencySetHandler
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.Properties
 
 plugins {
   java
@@ -17,8 +17,9 @@ plugins {
   jacoco
 
   `maven-publish`
+  signing
 
-  id("com.github.ben-manes.versions") version "0.38.0"
+  id("com.github.ben-manes.versions") version "0.39.0"
 
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
@@ -32,7 +33,7 @@ allprojects {
   apply(plugin = "idea")
   apply(plugin = "io.spring.dependency-management")
 
-  group = "de.qualersoft.robotframework"
+  group = "io.github.qualersoft.robotframework"
 
   repositories {
     mavenCentral()
@@ -47,27 +48,41 @@ allprojects {
       fun dependencySet(group: String, version: String, action: ((DependencySetHandler).() -> Unit)) =
         dependencySet(mapOf("group" to group, "version" to version), action)
 
+      dependency(group = "javax.inject", name = "javax.inject", version = "1")
+      dependency(group = "javax.annotation", name = "javax.annotation-api", version = "1.3.2")
+      dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.7.0")
+
+      dependency(group = "org.json", name = "json", version = "20220320")
       dependencySet(group = "io.kotest", version = "4.6.0") {
         entry("kotest-runner-junit5-jvm")
         entry("kotest-assertions-core-jvm")
         entry("kotest-property-jvm")
       }
 
-      dependency(group = "org.robotframework", name = "robotframework", version = "3.2.2")
+      dependency(group = "org.robotframework", name = "robotframework", version = "4.1.2")
 
-      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
+      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.11")
 
-      dependencySet(group = "org.springframework.boot", version = "2.4.4") {
-        entry("spring-boot-starter")
+      dependencySet(group = "org.springframework", version = "5.3.20") {
+        entry("spring-web")
+        entry("spring-context")
+      }
+      dependencySet(group = "org.springframework.boot", version = "2.6.7") {
+        entry("spring-boot")
+        entry("spring-boot-starter-logging")
       }
 
-      //add groovy to allow spring bean definition in groovy-style
+      // add groovy to allow spring bean definition in groovy-style
       dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.7")
     }
   }
 }
 
+val isReleaseVersion = version.toString().endsWith("snapshot", true)
+
 subprojects {
+  if (name.startsWith("example")) return@subprojects // configure example projects separately
+
   apply(plugin = "org.jetbrains.kotlin.jvm")
   apply(plugin = "org.jetbrains.kotlin.plugin.spring")
 
@@ -77,6 +92,7 @@ subprojects {
   apply(plugin = "org.jetbrains.dokka")
 
   apply(plugin = "maven-publish")
+  apply(plugin = "signing")
 
   jacoco {
     toolVersion = "0.8.7"
@@ -89,12 +105,14 @@ subprojects {
   configure<DetektExtension> {
     allRules = true
     config = files("$rootDir/detekt.yml")
-    input = files("src/main/kotlin")
+    source = files("src/main/kotlin")
+  }
 
+  tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
     reports {
-      html.enabled = true
-      xml.enabled = true
-      txt.enabled = false
+      html.required.set(true)
+      xml.required.set(true)
+      txt.required.set(false)
     }
   }
 
@@ -103,16 +121,19 @@ subprojects {
     finalizedBy(tasks.withType<JacocoReport>())
   }
 
+  val javaVersion = JavaVersion.VERSION_11
   tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-      jvmTarget = JavaVersion.VERSION_11.toString()
-      apiVersion = "1.5"
+      jvmTarget = javaVersion.toString()
+      apiVersion = "1.6"
     }
   }
 
   java {
     withSourcesJar()
     withJavadocJar()
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
   }
 
   val dokkaJavadoc: DokkaTask by tasks
@@ -121,7 +142,7 @@ subprojects {
   }
 
   tasks.getByName<Jar>("javadocJar") {
-    dependsOn.add(dokkaJavadoc)
+    dependsOn(dokkaJavadoc)
   }
 
   tasks.jar {
@@ -141,9 +162,9 @@ subprojects {
 
   tasks.withType<JacocoReport> {
     reports {
-      xml.isEnabled = true
-      html.isEnabled = true
-      csv.isEnabled = false
+      xml.required.set(true)
+      html.required.set(true)
+      csv.required.set(false)
     }
   }
 
@@ -154,12 +175,29 @@ subprojects {
           name = "gh-qualersoft-kolib"
           url = uri("https://maven.pkg.github.com/qualersoft/robotframework-kolib")
           credentials {
-            username = (project.findProperty("publish.gh.qualersoft.rfkolib.gpr.usr") ?: System.getenv("USERNAME"))?.toString()
-            password = (project.findProperty("publish.gh.qualersoft.rfkolib.gpr.key") ?: System.getenv("TOKEN"))?.toString()
+            val ghUsrnm: String? by project
+            val ghToken: String? by project
+            username = ghUsrnm
+            password = ghToken
+          }
+        }
+        maven {
+          name = "central"
+          val path = if (isReleaseVersion) {
+            "content/repositories/snapshots"
+          } else {
+            "service/local/staging/deploy/maven2"
+          }
+          url = uri("https://s01.oss.sonatype.org/$path/")
+          credentials {
+            val mvnCntrlUsr: String? by project
+            val mvnCntrlPswd: String? by project
+            username = mvnCntrlUsr
+            password = mvnCntrlPswd
           }
         }
       }
-      create<MavenPublication>("maven") {
+      register<MavenPublication>("maven") {
         from(components["java"])
         versionMapping {
           usage("java-api") {
@@ -169,27 +207,59 @@ subprojects {
             fromResolutionResult()
           }
         }
+        pom {
+          url.set("https://github.com/qualersoft/robotframework-kolib")
+          licenses {
+            license {
+              name.set("The Apache License, Version 2.0")
+              url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+              distribution.set("repo")
+            }
+          }
+          developers {
+            developer {
+              id.set("mathze")
+              name.set("mathze")
+              email.set("270275+mathze@users.noreply.github.com")
+              url.set("https://github.com/mathze")
+              organization.set("QualerSoft")
+              organizationUrl.set("https://qualersoft.github.io/")
+            }
+          }
+          scm {
+            url.set("https://github.com/qualersoft/robotframework-kolib.git")
+            connection.set("scm:git:git://github.com/qualersoft/robotframework-kolib.git")
+            developerConnection.set("scm:git:git@github.com:qualersoft/robotframework-kolib.git")
+            tag.set("HEAD")
+          }
+        }
       }
     }
   }
-}
 
-val jMerge = tasks.register<JacocoMerge>("jacocoMerge") {
-  subprojects.forEach {
-    executionData(it.tasks.withType<Test>())
+  signing {
+    val signingKey: String? by project
+    val signingPassword: String? by project
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign(publishing.publications["maven"])
+  }
+
+  tasks.withType<Sign> {
+    onlyIf { isReleaseVersion }
   }
 }
 
 tasks.register<JacocoReport>("jacocoRootReport") {
-  dependsOn(jMerge)
+  group = "verification"
   subprojects.forEach {
+    if (it.name.startsWith("example")) return@forEach
+    group = "verification"
     val srcDirs = it.sourceSets.main.get().allSource.srcDirs
     additionalSourceDirs.from(srcDirs)
     sourceDirectories.from(srcDirs)
     classDirectories.from(it.sourceSets.main.get().output)
-    
+    executionData(it.tasks.withType<Test>())
   }
-  executionData.from(jMerge.get().destinationFile)
 }
 
 tasks.register("updateVersion") {
@@ -206,7 +276,7 @@ tasks.register("updateVersion") {
     var newVersion = project.findProperty("newVersion") as String?
       ?: throw IllegalArgumentException(
         "No `newVersion` specified!" +
-            " Usage: ./gradlew updateVersion -PnewVersion=<version>"
+          " Usage: ./gradlew updateVersion -PnewVersion=<version>"
       )
 
     if (newVersion.contains("snapshot", true)) {

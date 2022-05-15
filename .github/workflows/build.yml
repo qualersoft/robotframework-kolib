@@ -14,6 +14,12 @@ jobs:
     outputs:
       branch: ${{ steps.extract_branch.outputs.branch }}
     steps:
+      - name: "setup java"
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - uses: actions/checkout@v2
         id: checkout
 
@@ -50,6 +56,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: init
     steps:
+      - name: "setup java"
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: "Load sources"
         uses: actions/cache@v2
         with:
@@ -87,6 +99,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: init
     steps:
+      - name: "setup java"
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: "Load sources"
         uses: actions/cache@v2
         with:
@@ -113,6 +131,12 @@ jobs:
     runs-on: ubuntu-latest
     needs: compile
     steps:
+      - name: "setup java"
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: "Load compile cache"
         uses: actions/cache@v2
         with:
@@ -138,7 +162,9 @@ jobs:
 
   licenceCheck:
     runs-on: ubuntu-latest
-    needs: compile
+    needs:
+      - compile
+      - staticFossaCheck
     steps:
       - name: "Load sources"
         uses: actions/cache@v2
@@ -155,6 +181,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - test
+    if: ${{ !cancelled() }}
     steps:
       - name: "Load test cache"
         uses: actions/cache@v2
@@ -167,11 +194,18 @@ jobs:
 
   publishSnapshot:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.ref == 'develop'
     needs:
+      - init
       - report
       - licenceCheck
+    if: (needs.init.outputs.branch == 'develop') && success()
     steps:
+      - name: "setup java"
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: "Load compile cache"
         uses: actions/cache@v2
         with:
@@ -188,6 +222,13 @@ jobs:
 
       - name: "Publish"
         env:
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ github.token }}
+          # for github registry
+          ORG_GRADLE_PROJECT_ghToken: ${{ secrets.GITHUB_TOKEN }}
+          ORG_GRADLE_PROJECT_ghUsrnm: ${{ github.actor }}
+          # for sonartype OSSRH
+          ORG_GRADLE_PROJECT_mvnCntrlUsr: ${{ secrets.MVN_CNTRL_USR }}
+          ORG_GRADLE_PROJECT_mvnCntrlPswd: ${{ secrets.MVN_CNTRL_PSWD }}
+          # for signing
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MVN_CNTRL_SECRET_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MVN_CNTRL_SECRET_KEY_PASS }}
         run: ${{ github.workspace }}/gradlew publish --no-daemon

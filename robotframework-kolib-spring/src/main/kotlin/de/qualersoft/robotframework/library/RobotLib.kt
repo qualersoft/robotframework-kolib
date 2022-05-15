@@ -29,12 +29,12 @@ import kotlin.reflect.full.memberFunctions
  * long paths when using in robot-files.
  *
  * If you do so, you can simply create a marker interface/class in your sub package.
- * 
+ *
  * **Attention:**
- * 
- * Do not force springs class scanning to operate on the `empty` package! This may either 
+ *
+ * Do not force springs class scanning to operate on the `empty` package! This may either
  * lead to out of memory exception or take a large initialization time.
- * 
+ *
  * Try to put [root] as close as possible to your implementation.
  */
 open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalDynamicLibrary, RfKwArgsSupport,
@@ -53,7 +53,7 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
       File(src.location.toURI())
     } else {
       val path = root.java.getResource("${root.java.simpleName}.class")?.path?.let {
-        it.substring(it.indexOf(':')+1, it.indexOf('!'))
+        it.substring(it.indexOf(':') + 1, it.indexOf('!'))
       }
       if (null == path) {
         null
@@ -123,37 +123,39 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
     val kwd = keyWords.getValue(name)
     val pathToJar = rootPath ?: return null
     val classPath = kwd.declaringClass.qualifiedName?.replace('.', File.separatorChar)
-    return "$pathToJar${File.separatorChar}$classPath" 
+    return "$pathToJar${File.separatorChar}$classPath"
   }
 
   /**
    * Return an instance, which may be shared or independent, of the specified bean.
-   * 
+   *
    * Allows for specifying explicit constructor arguments / factory method arguments,
    * overriding the specified default arguments (if any) in the bean definition.
-   * 
+   *
    * For details see [`BeanFactory.getBean(Class<T>, Object...)`] [org.springframework.beans.factory.BeanFactory.getBean].
    *
-   * @param args arguments to use when creating a bean instance using explicit arguments
-   * 
-   * @return an instance of the bean
+   * @param T Type the bean must match; can be an interface or superclass.
+   * @param args Arguments to use when creating a bean instance using explicit arguments (only applied when creating a
+   * new instance as opposed to retrieving an existing one).
+   *
+   * @return An instance of the bean.
    */
-  protected inline fun <reified T> getBean(vararg args:Any?): T {
+  protected inline fun <reified T> getBean(vararg args: Any?): T {
     return ctx.getBean(T::class.java, *args)
   }
 
   /**
    * Return an instance, which may be shared or independent, of the specified bean.
-   * 
+   *
    * Allows for specifying explicit constructor arguments / factory method arguments,
    * overriding the specified default arguments (if any) in the bean definition.
-   * 
+   *
    * For details see [`BeanFactory.getBean(String, Object...)`] [org.springframework.beans.factory.BeanFactory.getBean].
-   * 
+   *
    * @param name the name of the bean to retrieve
    * @param args arguments to use when creating a bean instance using explicit arguments
    * (only applied when creating a new instance as opposed to retrieving an existing one)
-   * 
+   *
    * @return an instance of the bean
    */
   protected fun getBean(name: String, vararg args: Any?): Any {
@@ -164,13 +166,13 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
    * Meant to be overwritten. Default impl returns empty string
    */
   @SuppressWarnings("FunctionOnlyReturningConstant")
-  protected fun getLibraryGeneralDocumentation(): String = ""
+  protected open fun getLibraryGeneralDocumentation(): String = ""
 
   /**
    * Meant to be overwritten. Default impl returns empty string
    */
   @SuppressWarnings("FunctionOnlyReturningConstant")
-  protected fun getLibraryUsageDocumentation(): String = ""
+  protected open fun getLibraryUsageDocumentation(): String = ""
 
   private fun findKeywordBeans(): List<KClass<*>> = ctx.beanDefinitionNames.mapNotNull {
     val bd = ctx.beanFactory.getBeanDefinition(it)

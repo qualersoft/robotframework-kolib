@@ -4,13 +4,23 @@ import de.qualersoft.robotframework.library.annotation.Keyword
 import de.qualersoft.robotframework.library.annotation.KwdArg
 import de.qualersoft.robotframework.library.model.ParameterKind
 import io.kotest.core.spec.style.FreeSpec
-import io.kotest.matchers.collections.*
+import io.kotest.matchers.collections.shouldContain
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.collections.shouldNotContainAnyOf
+import io.kotest.matchers.maps.beEmpty
+import io.kotest.matchers.nulls.beNull
+import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNot
+import io.kotest.matchers.string.endWith
+import io.kotest.matchers.string.shouldBeEmpty
 import io.kotest.matchers.string.shouldNotStartWith
 import io.kotest.matchers.string.shouldStartWith
-import io.kotest.matchers.string.shouldBeEmpty
 import org.junit.jupiter.api.assertAll
 import org.springframework.context.annotation.ComponentScan
+import java.io.File
 import javax.annotation.ManagedBean
 
 @ComponentScan(basePackageClasses = [RobotLibTest::class])
@@ -118,9 +128,28 @@ class RobotLibTest : FreeSpec({
     val origin = getLibTestKwdNames()
     origin shouldContain "subpackageFunction"
   }
-})
-fun getLibTestKwdNames() = RobotLib(root = RobotLibTest::class).getKeywordNames()
 
+  "Get keyword types of noargs keyword" {
+    val sut = RobotLib(root = RobotLibTest::class)
+    val actual = sut.getKeywordTypes("publicKeywordWithNameFromAnnotation")
+    actual should beEmpty()
+  }
+
+  "Get keyword types of mappable types" {
+    val sut = RobotLib(root = RobotLibTest::class)
+    val actual = sut.getKeywordTypes("withAnnotatedArgsNoReturn")
+    actual shouldBe mapOf("first" to "str", "second" to "int")
+  }
+
+  "Get keyword source" {
+    val sut = RobotLib(root = RobotLibTest::class)
+    val actual = sut.getKeywordSource("withAnnotatedArgsNoReturn")
+    actual shouldNot beNull()
+    actual should endWith(KeywordArgs::class.qualifiedName!!.replace('.', File.separatorChar))
+  }
+})
+
+fun getLibTestKwdNames() = RobotLib(root = RobotLibTest::class).getKeywordNames()
 
 //<editor-fold desc="keyword discovery test classes">
 @Suppress("unused")
@@ -203,7 +232,7 @@ open class KeywordArgs {
   }
 
   @Keyword
-  fun withVarArg(@KwdArg(kind=ParameterKind.VARARG) variable: List<String>?) {
+  fun withVarArg(@KwdArg(kind = ParameterKind.VARARG) variable: List<String>?) {
   }
 }
 

@@ -9,10 +9,8 @@ object EnumConverter {
     val enums = targetType.java.enumConstants.map { it as Enum<*> }
     var candidates = enums.filter {
       it.name.equals(value.toString(), true) || // Plain match
-        // ignore spaces
-        it.name.replace(' ', '_').equals(value.toString().replace(' ', '_'), true) ||
-        // ignore underscores
-        it.name.replace('_', ' ').equals(value.toString().replace('_', ' '), true)
+        // ignore spaces and underscores
+        it.name.replace(' ', '_').equals(value.toString().replace(' ', '_'), true)
     }
 
     if (candidates.isEmpty()) {

@@ -6,14 +6,14 @@ import de.qualersoft.robotframework.library.conversion.EnumConverter
 import de.qualersoft.robotframework.library.conversion.NumberConverter
 import de.qualersoft.robotframework.library.conversion.TemporalConverter
 import java.time.temporal.Temporal
-import java.util.*
+import java.util.Date
+import java.util.Optional
 import kotlin.reflect.KClass
 import kotlin.reflect.KParameter
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.isSuperclassOf
-import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.safeCast
 
 class KeywordParameterDescriptor(val param: KParameter) {
@@ -180,7 +180,6 @@ class KeywordParameterDescriptor(val param: KParameter) {
         }
         // last hope we find a constructor in target type that match the value type
         else -> type.constructors.single {
-          it.isAccessible &&
             it.visibility == KVisibility.PUBLIC &&
             it.parameters.size == 1 &&
             (it.parameters[0].type.classifier as KClass<*>).isSuperclassOf(value::class)

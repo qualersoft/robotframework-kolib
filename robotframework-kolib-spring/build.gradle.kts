@@ -9,21 +9,25 @@ plugins {
 dependencies {
   api(project(":robotframework-kolib-core"))
 
-  //add groovy to allow spring bean definition in groovy-style
+  // add groovy to allow spring bean definition in groovy-style
   compileOnly(group = "org.codehaus.groovy", name = "groovy")
 
   implementation(kotlin("reflect"))
 
-  api(group = "org.springframework.boot", name = "spring-boot-starter")
+  implementation(group = "org.springframework.boot", name = "spring-boot-starter-logging")
+  implementation(group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.0.0")
+  api(group = "org.springframework.boot", name = "spring-boot")
 
   listOf("kotest-runner-junit5-jvm", "kotest-assertions-core").forEach {
     testImplementation(group = "io.kotest", name = it)
   }
 
-  testImplementation(group= "io.github.classgraph", name="classgraph", version="4.8.102")
+  testImplementation(group = "org.yaml", name = "snakeyaml", version = "1.29")
+  testImplementation(group = "io.github.classgraph", name = "classgraph", version = "4.8.132")
 
-  testImplementation(group = "ch.qos.logback", name = "logback-classic", version = "1.2.3")
-  testImplementation(group = "org.robotframework", name = "robotframework", version = "4.0.1")
+  testImplementation(group = "ch.qos.logback", name = "logback-classic")
+  testImplementation(group = "javax.annotation", name = "javax.annotation-api", version = "1.3.2")
+  testImplementation(group = "org.robotframework", name = "robotframework")
 }
 
 tasks.test {
@@ -41,11 +45,24 @@ tasks.test {
       if (null == suite.parent) { // root suite
         logger.lifecycle("----")
         logger.lifecycle("Test result: ${result.resultType}")
-        logger.lifecycle("Test summary: ${result.testCount} tests, " +
+        logger.lifecycle(
+          "Test summary: ${result.testCount} tests, " +
             "${result.successfulTestCount} succeeded, " +
             "${result.failedTestCount} failed, " +
-            "${result.skippedTestCount} skipped")
+            "${result.skippedTestCount} skipped"
+        )
       }
     }
   })
+}
+
+publishing {
+  publications {
+    named<MavenPublication>("maven") {
+      pom {
+        name.set("Kolib spring")
+        description.set("Library using spring for keyword discovery.")
+      }
+    }
+  }
 }

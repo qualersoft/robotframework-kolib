@@ -28,11 +28,24 @@ tasks.test {
       if (null == suite.parent) { // root suite
         logger.lifecycle("----")
         logger.lifecycle("Test result: ${result.resultType}")
-        logger.lifecycle("Test summary: ${result.testCount} tests, " +
+        logger.lifecycle(
+          "Test summary: ${result.testCount} tests, " +
             "${result.successfulTestCount} succeeded, " +
             "${result.failedTestCount} failed, " +
-            "${result.skippedTestCount} skipped")
+            "${result.skippedTestCount} skipped"
+        )
       }
     }
   })
+}
+
+publishing {
+  publications {
+    named<MavenPublication>("maven") {
+      pom {
+        name.set("Kolib core")
+        description.set("Base library for binding to robot framework.")
+      }
+    }
+  }
 }
