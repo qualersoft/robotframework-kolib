@@ -183,7 +183,11 @@ subprojects {
         }
         maven {
           name = "central"
-          val path = if(isReleaseVersion) { "content/repositories/snapshots" } else { "service/local/staging/deploy/maven2" }
+          val path = if (isReleaseVersion) {
+            "content/repositories/snapshots"
+          } else {
+            "service/local/staging/deploy/maven2"
+          }
           url = uri("https://s01.oss.sonatype.org/$path/")
           credentials {
             val mvnCntrlUsr: String? by project
