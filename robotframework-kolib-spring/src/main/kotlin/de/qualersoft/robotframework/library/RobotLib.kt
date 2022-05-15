@@ -134,9 +134,11 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
    *
    * For details see [`BeanFactory.getBean(Class<T>, Object...)`] [org.springframework.beans.factory.BeanFactory.getBean].
    *
-   * @param args arguments to use when creating a bean instance using explicit arguments
+   * @param T Type the bean must match; can be an interface or superclass.
+   * @param args Arguments to use when creating a bean instance using explicit arguments (only applied when creating a
+   * new instance as opposed to retrieving an existing one).
    *
-   * @return an instance of the bean
+   * @return An instance of the bean.
    */
   protected inline fun <reified T> getBean(vararg args: Any?): T {
     return ctx.getBean(T::class.java, *args)

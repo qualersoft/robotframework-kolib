@@ -194,10 +194,11 @@ jobs:
 
   publishSnapshot:
     runs-on: ubuntu-latest
-    if: ${{ (github.event.pull_request.head.ref == 'develop') && !cancelled() }}
     needs:
+      - init
       - report
       - licenceCheck
+    if: (needs.init.outputs.branch == 'develop') && success()
     steps:
       - name: "setup java"
         uses: actions/setup-java@v2
@@ -221,6 +222,13 @@ jobs:
 
       - name: "Publish"
         env:
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ github.token }}
+          # for github registry
+          ORG_GRADLE_PROJECT_ghToken: ${{ secrets.GITHUB_TOKEN }}
+          ORG_GRADLE_PROJECT_ghUsrnm: ${{ github.actor }}
+          # for sonartype OSSRH
+          ORG_GRADLE_PROJECT_mvnCntrlUsr: ${{ secrets.MVN_CNTRL_USR }}
+          ORG_GRADLE_PROJECT_mvnCntrlPswd: ${{ secrets.MVN_CNTRL_PSWD }}
+          # for signing
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MVN_CNTRL_SECRET_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MVN_CNTRL_SECRET_KEY_PASS }}
         run: ${{ github.workspace }}/gradlew publish --no-daemon
