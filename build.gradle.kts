@@ -243,10 +243,6 @@ subprojects {
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications["maven"])
   }
-
-  tasks.withType<Sign> {
-    onlyIf { isReleaseVersion }
-  }
 }
 
 tasks.register<JacocoReport>("jacocoRootReport") {
