@@ -194,10 +194,11 @@ jobs:
 
   publishSnapshot:
     runs-on: ubuntu-latest
-    if: ${{ (github.event.pull_request.head.ref == 'develop') && !cancelled() }}
     needs:
+      - init
       - report
       - licenceCheck
+    if: (needs.init.outputs.branch == 'develop') && success()
     steps:
       - name: "setup java"
         uses: actions/setup-java@v2
