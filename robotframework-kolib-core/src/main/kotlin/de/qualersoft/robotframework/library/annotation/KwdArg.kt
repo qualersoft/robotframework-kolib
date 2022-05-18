@@ -30,9 +30,14 @@ annotation class KwdArg(
   val type: KClass<*> = Nothing::class,
 
   /**
-   * Only used if dealing with java functions, where the name can not be retrieved.
+   * Only used if dealing with java functions, where the name normally can not be retrieved.
    * Gives the user the possibility to avoid argument names like `arg1`.
-   * Defaults to [NULL_STRING] which indicates to use the build in detection mode.
+   * Defaults to [NULL_STRING] which indicates to use the build-in detection mode.
+   *
+   * **Remark:**
+   *
+   * In case of java, you can use `-parameters` compiler flag to prevent parameter-name
+   * information in compiled class files.
    */
   val name: String = NULL_STRING
 ) {
