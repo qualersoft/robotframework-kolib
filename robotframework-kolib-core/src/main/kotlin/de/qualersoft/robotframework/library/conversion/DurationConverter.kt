@@ -53,7 +53,8 @@ object DurationConverter {
 
   private fun numberToDuration(seconds: BigDecimal): Duration {
     val integralPart = seconds.toBigInteger().toLong()
-    val fractionalPart = ((seconds - integralPart.toBigDecimal()) * BigDecimal(SECONDS_FRACTION_TO_NANO_FACTOR)).toLong()
+    val fractionalPart =
+      ((seconds - integralPart.toBigDecimal()) * BigDecimal(SECONDS_FRACTION_TO_NANO_FACTOR)).toLong()
     return Duration.ofSeconds(integralPart) + Duration.ofNanos(fractionalPart)
   }
 
