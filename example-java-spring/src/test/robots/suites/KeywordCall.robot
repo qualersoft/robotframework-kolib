@@ -15,7 +15,6 @@ Call kwarg fnc with position and kwargs
   Fn Call with kwargs   just pos  key1=val 1  key2=snd Val
 
 Call var- and kw-arg fnc with just position
-  [Tags]    DEBUG
   Fn Call With Var And KwArgs  just pos
 
 Call var- and kw-arg fnc with position and varargs
