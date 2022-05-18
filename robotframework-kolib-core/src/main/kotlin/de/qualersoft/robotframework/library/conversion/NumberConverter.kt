@@ -1,5 +1,6 @@
 package de.qualersoft.robotframework.library.conversion
 
+import org.python.core.PyObject
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.reflect.KClass
@@ -10,6 +11,9 @@ object NumberConverter {
       return numberOfString(targetType, value)
     } else if (value is Number) {
       return numberOfNumber(targetType, value)
+    } else if ((value is PyObject) && value.isNumberType) {
+      val tmp = value.__tojava__(Double::class.java) as Double
+      return numberOfNumber(targetType, tmp)
     }
     throw UnsupportedOperationException("Couldn't find a matching number converter for `$value` to '$targetType'")
   }

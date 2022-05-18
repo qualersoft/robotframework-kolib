@@ -2,9 +2,11 @@ package de.qualersoft.robotframework.library.model
 
 import de.qualersoft.robotframework.library.annotation.KwdArg
 import de.qualersoft.robotframework.library.conversion.BooleanConverter
+import de.qualersoft.robotframework.library.conversion.DurationConverter
 import de.qualersoft.robotframework.library.conversion.EnumConverter
 import de.qualersoft.robotframework.library.conversion.NumberConverter
 import de.qualersoft.robotframework.library.conversion.TemporalConverter
+import java.time.Duration
 import java.time.temporal.Temporal
 import java.util.Date
 import java.util.Optional
@@ -172,6 +174,9 @@ class KeywordParameterDescriptor(val param: KParameter) {
         isClassOf(type, Temporal::class), isClassOf(type, Date::class) -> {
           TemporalConverter.convertToTemporal(type, value)
         }
+        Duration::class -> {
+          DurationConverter.convertToDuration(type, value)
+        }
         String::class -> {
           value.toString()
         }
@@ -180,7 +185,7 @@ class KeywordParameterDescriptor(val param: KParameter) {
         }
         // last hope we find a constructor in target type that match the value type
         else -> type.constructors.single {
-            it.visibility == KVisibility.PUBLIC &&
+          it.visibility == KVisibility.PUBLIC &&
             it.parameters.size == 1 &&
             (it.parameters[0].type.classifier as KClass<*>).isSuperclassOf(value::class)
         }.call(value)
