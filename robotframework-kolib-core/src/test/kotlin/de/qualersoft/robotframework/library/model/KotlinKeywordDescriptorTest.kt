@@ -277,9 +277,9 @@ class KotlinKeywordDescriptorTest {
       Arguments.of("Double", "float"),
       Arguments.of("BigDecimal", "class java.math.BigDecimal"),
       Arguments.of("Boolean", "bool"),
-      Arguments.of("String", "str"),
-      Arguments.of("Date", "datetime"),
-      Arguments.of("Temporal", "datetime"),
+      Arguments.of("String", "str()"),
+      Arguments.of("Date", "datetime.datetime"),
+      Arguments.of("Temporal", "datetime.datetime"),
       Arguments.of("Duration", "timedelta"),
       Arguments.of("ByteArray", "bytearray"),
       Arguments.of(

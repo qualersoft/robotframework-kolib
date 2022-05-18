@@ -33,7 +33,7 @@ object DurationConverter {
       val days = value.__findattr__("days").asLong()
       val sec = value.__findattr__("seconds").asLong()
       val micsec = value.__findattr__("microseconds").asLong()
-      Duration.ofDays(days) + Duration.ofSeconds(sec) + Duration.ofNanos(micsec * 1000)
+      Duration.ofDays(days) + Duration.ofSeconds(sec) + Duration.ofNanos(micsec * MICRO_TO_NANO_FACTOR)
     }
     else -> {
       throw IllegalArgumentException("No conversion strategy of $value to $targetType")
@@ -53,7 +53,17 @@ object DurationConverter {
 
   private fun numberToDuration(seconds: BigDecimal): Duration {
     val integralPart = seconds.toBigInteger().toLong()
-    val fractionalPart = ((seconds - integralPart.toBigDecimal()) * BigDecimal(1e9)).toLong()
+    val fractionalPart = ((seconds - integralPart.toBigDecimal()) * BigDecimal(SECONDS_FRACTION_TO_NANO_FACTOR)).toLong()
     return Duration.ofSeconds(integralPart) + Duration.ofNanos(fractionalPart)
   }
+
+  /**
+   * Factor to convert seconds fraction part to nanoseconds.
+   */
+  private const val SECONDS_FRACTION_TO_NANO_FACTOR = 1e9
+
+  /**
+   * Factor to convert microseconds to nanoseconds.
+   */
+  private const val MICRO_TO_NANO_FACTOR = 1000
 }

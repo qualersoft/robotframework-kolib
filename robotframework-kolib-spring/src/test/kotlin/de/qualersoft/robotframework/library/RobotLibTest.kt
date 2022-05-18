@@ -138,7 +138,7 @@ class RobotLibTest : FreeSpec({
   "Get keyword types of mappable types" {
     val sut = RobotLib(root = RobotLibTest::class)
     val actual = sut.getKeywordTypes("withAnnotatedArgsNoReturn")
-    actual shouldBe mapOf("first" to "str", "second" to "int")
+    actual shouldBe mapOf("first" to "str()", "second" to "int")
   }
 
   "Get keyword source" {
