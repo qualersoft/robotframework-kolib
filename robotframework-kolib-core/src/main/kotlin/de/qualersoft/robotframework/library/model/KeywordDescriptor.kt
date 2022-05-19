@@ -62,15 +62,15 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
         "bool"
       }
       originType == String::class -> {
-        "str"
+        "str()"
       }
       originType == Date::class || originType.isSubclassOf(Temporal::class) -> {
-        "datetime"
+        "datetime.datetime"
       }
       originType == Duration::class -> {
         "timedelta"
       }
-      originType == ByteArray::class -> {
+      (originType == ByteArray::class) -> {
         "bytearray"
       }
       else -> originType

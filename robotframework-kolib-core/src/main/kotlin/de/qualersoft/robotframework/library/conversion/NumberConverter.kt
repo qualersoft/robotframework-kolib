@@ -1,17 +1,22 @@
 package de.qualersoft.robotframework.library.conversion
 
+import org.python.core.PyObject
 import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.reflect.KClass
 
 object NumberConverter {
   fun convertToNumber(targetType: KClass<*>, value: Any): Any {
-    if (value is String) {
-      return numberOfString(targetType, value)
+    return if (value is String) {
+      numberOfString(targetType, value)
     } else if (value is Number) {
-      return numberOfNumber(targetType, value)
+      numberOfNumber(targetType, value)
+    } else if ((value is PyObject) && value.isNumberType) {
+      val tmp = value.__tojava__(Double::class.java) as Double
+      numberOfNumber(targetType, tmp)
+    } else {
+      throw UnsupportedOperationException("Couldn't find a matching number converter for `$value` to '$targetType'")
     }
-    throw UnsupportedOperationException("Couldn't find a matching number converter for `$value` to '$targetType'")
   }
 
   private fun numberOfString(targetType: KClass<*>, value: String): Number = when (targetType) {

@@ -42,10 +42,10 @@ console-reports:
 
 output-reports:
   active: true
-  exclude:
-  # - 'TxtOutputReport'
-  # - 'XmlOutputReport'
-  # - 'HtmlOutputReport'
+#  exclude:
+#   - 'TxtOutputReport'
+#   - 'XmlOutputReport'
+#   - 'HtmlOutputReport'
 
 comments:
   active: true
@@ -142,7 +142,7 @@ complexity:
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
-    excludes: ['**/*test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
+    excludes: ['**/*test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt', "**/*Kwds.kt"]
     thresholdInFiles: 11
     thresholdInClasses: 11
     thresholdInInterfaces: 11

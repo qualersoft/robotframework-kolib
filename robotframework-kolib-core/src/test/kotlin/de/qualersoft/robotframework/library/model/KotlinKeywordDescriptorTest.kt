@@ -2,6 +2,7 @@ package de.qualersoft.robotframework.library.model
 
 import de.qualersoft.robotframework.library.annotation.Keyword
 import de.qualersoft.robotframework.library.annotation.KwdArg
+import de.qualersoft.robotframework.library.conversion.PyObjUtil
 import io.kotest.matchers.collections.haveSize
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
@@ -118,14 +119,16 @@ class KotlinKeywordDescriptorTest {
         1,
         "42",
         "2021-06-24",
-        "check"
+        "check",
+        Duration.ofSeconds(1)
       )
     )
     res shouldBe """Result: {
       | "acceptTerms": true,
       | "age": 42,
       | "orderDate": "2021-06-24",
-      | "payment": "CHECK"
+      | "payment": "CHECK",
+      | "ttl": "PT1S"
       |}""".trimMargin()
   }
 
@@ -136,14 +139,16 @@ class KotlinKeywordDescriptorTest {
         "false",
         "42",
         "2021-06-24",
-        "check"
+        "check",
+        Duration.ofSeconds(1)
       )
     )
     res shouldBe """Result: {
       | "acceptTerms": false,
       | "age": 42,
       | "orderDate": "2021-06-24",
-      | "payment": "CHECK"
+      | "payment": "CHECK",
+      | "ttl": "PT1S"
       |}""".trimMargin()
   }
 
@@ -154,14 +159,19 @@ class KotlinKeywordDescriptorTest {
         "acceptTerms" to "false",
         "age" to "42",
         "orderDate" to "2021-06-24",
-        "type" to "check"
+        "type" to "check",
+        "ttl" to PyObjUtil.create(
+          """from datetime import timedelta
+            |res = timedelta(minutes=8, seconds=5)""".trimMargin()
+        )
       )
     )
     res shouldBe """Result: {
       | "acceptTerms": false,
       | "age": 42,
       | "orderDate": "2021-06-24",
-      | "payment": "CHECK"
+      | "payment": "CHECK",
+      | "ttl": "PT8M5S"
       |}""".trimMargin()
   }
 
@@ -182,7 +192,7 @@ class KotlinKeywordDescriptorTest {
       |  "ka2": "8"
       |}""".trimMargin()
   }
-  
+
   @Test
   fun testCallWithPosButNoKwArgsGiven() {
     val res = exec<InvokeHolderClass>(
@@ -266,7 +276,6 @@ class KotlinKeywordDescriptorTest {
     }
 
   companion object {
-    @Suppress("unused")
     @JvmStatic
     fun typeFactory(): Stream<Arguments> = Stream.of(
       Arguments.of("Byte", "int"),
@@ -277,9 +286,9 @@ class KotlinKeywordDescriptorTest {
       Arguments.of("Double", "float"),
       Arguments.of("BigDecimal", "class java.math.BigDecimal"),
       Arguments.of("Boolean", "bool"),
-      Arguments.of("String", "str"),
-      Arguments.of("Date", "datetime"),
-      Arguments.of("Temporal", "datetime"),
+      Arguments.of("String", "str()"),
+      Arguments.of("Date", "datetime.datetime"),
+      Arguments.of("Temporal", "datetime.datetime"),
       Arguments.of("Duration", "timedelta"),
       Arguments.of("ByteArray", "bytearray"),
       Arguments.of(
@@ -437,12 +446,19 @@ class KotlinKeywordDescriptorTest {
         .joinToString(",\n", "{\n", "\n}")
 
     @Keyword
-    fun callWithDifferentTypes(acceptTerms: Boolean, age: Int, orderDate: LocalDate, type: PaymentType): String {
+    fun callWithDifferentTypes(
+      acceptTerms: Boolean,
+      age: Int,
+      orderDate: LocalDate,
+      type: PaymentType,
+      ttl: Duration
+    ): String {
       return """Result: {
         | "acceptTerms": $acceptTerms,
         | "age": $age,
         | "orderDate": "$orderDate",
-        | "payment": "$type"
+        | "payment": "$type",
+        | "ttl": "$ttl"
         |}""".trimMargin()
     }
 
