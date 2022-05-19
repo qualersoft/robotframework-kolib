@@ -175,7 +175,7 @@ class KeywordParameterDescriptor(val param: KParameter) {
           TemporalConverter.convertToTemporal(type, value)
         }
         Duration::class -> {
-          DurationConverter.convertToDuration(type, value)
+          DurationConverter.convertToDuration(value)
         }
         String::class -> {
           value.toString()

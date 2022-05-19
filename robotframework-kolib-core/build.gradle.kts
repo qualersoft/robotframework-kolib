@@ -20,7 +20,7 @@ dependencies {
 tasks {
   withType<KotlinCompile>().configureEach {
     kotlinOptions {
-      freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+      freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
     }
   }
 

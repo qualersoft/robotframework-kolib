@@ -6,13 +6,12 @@ import java.time.Duration
 import java.time.temporal.TemporalAmount
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-import kotlin.reflect.KClass
 import kotlin.reflect.safeCast
 
 object DurationConverter {
 
   @OptIn(ExperimentalContracts::class)
-  fun convertToDuration(targetType: KClass<*>, value: Any): Any = when {
+  fun convertToDuration(value: Any): Any = when {
     (value is String) -> {
       if (value.toBigDecimalOrNull() == null) {
         // not a number
@@ -36,7 +35,7 @@ object DurationConverter {
       Duration.ofDays(days) + Duration.ofSeconds(sec) + Duration.ofNanos(micsec * MICRO_TO_NANO_FACTOR)
     }
     else -> {
-      throw IllegalArgumentException("No conversion strategy of $value to $targetType")
+      throw IllegalArgumentException("No conversion strategy of $value to Duration.")
     }
   }
 
@@ -54,17 +53,17 @@ object DurationConverter {
   private fun numberToDuration(seconds: BigDecimal): Duration {
     val integralPart = seconds.toBigInteger().toLong()
     val fractionalPart =
-      ((seconds - integralPart.toBigDecimal()) * BigDecimal(SECONDS_FRACTION_TO_NANO_FACTOR)).toLong()
-    return Duration.ofSeconds(integralPart) + Duration.ofNanos(fractionalPart)
+      ((seconds - integralPart.toBigDecimal()) * SECONDS_FRACTION_TO_NANO_FACTOR).toLong()
+    return Duration.ofSeconds(integralPart, fractionalPart)
   }
 
   /**
-   * Factor to convert seconds fraction part to nanoseconds.
+   * Factor to convert seconds fraction part to nanoseconds (OneBillion).
    */
-  private const val SECONDS_FRACTION_TO_NANO_FACTOR = 1e9
+  private val SECONDS_FRACTION_TO_NANO_FACTOR = BigDecimal(1e9)
 
   /**
    * Factor to convert microseconds to nanoseconds.
    */
-  private const val MICRO_TO_NANO_FACTOR = 1000
+  private const val MICRO_TO_NANO_FACTOR = 1000L
 }
