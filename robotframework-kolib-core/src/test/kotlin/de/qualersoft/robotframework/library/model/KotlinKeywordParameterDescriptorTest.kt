@@ -165,30 +165,21 @@ class KotlinKeywordParameterDescriptorTest {
   fun testDocumentationWithDescriptionAndDefault() {
     val param = getParameterOf<AnnotatedFunctionsHolderClass>("withDocuAndDefault")
     val descriptor = KeywordParameterDescriptor(param)
-    val t = "\t"
-    descriptor.documentation shouldBe """test [String] A test value
-      |${t}DEFAULT: `empty`
-    """.trimMargin()
+    descriptor.documentation shouldBe "test (_DEFAULT_: `empty`) [String] A test value"
   }
 
   @Test
   fun testDocumentationWithDescriptionAndEmptyDefault() {
     val param = getParameterOf<AnnotatedFunctionsHolderClass>("withDocuAndEmptyDefault")
     val descriptor = KeywordParameterDescriptor(param)
-    val t = "\t"
-    descriptor.documentation shouldBe """test [String] A test value
-      |${t}DEFAULT: ``
-    """.trimMargin()
+    descriptor.documentation shouldBe "test (_DEFAULT_: ``) [String] A test value"
   }
 
   @Test
   fun testDocumentationWithDescriptionAndBlankDefault() {
     val param = getParameterOf<AnnotatedFunctionsHolderClass>("withDocuAndBlankDefault")
     val descriptor = KeywordParameterDescriptor(param)
-    val t = "\t"
-    descriptor.documentation shouldBe """test [String] A test value
-      |${t}DEFAULT: ` `
-    """.trimMargin()
+    descriptor.documentation shouldBe "test (_DEFAULT_: ` `) [String] A test value"
   }
   //</editor-fold>
 
@@ -323,4 +314,3 @@ class KotlinKeywordParameterDescriptorTest {
     fun withAnnotationButNotKwdArgs(@JavaTimeConversionPattern("") test: String) {}
   }
 }
-

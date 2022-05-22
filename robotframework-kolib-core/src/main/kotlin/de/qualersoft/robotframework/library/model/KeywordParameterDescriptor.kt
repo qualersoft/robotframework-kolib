@@ -6,6 +6,8 @@ import de.qualersoft.robotframework.library.conversion.DurationConverter
 import de.qualersoft.robotframework.library.conversion.EnumConverter
 import de.qualersoft.robotframework.library.conversion.NumberConverter
 import de.qualersoft.robotframework.library.conversion.TemporalConverter
+import de.qualersoft.robotframework.library.ifNotBlank
+import de.qualersoft.robotframework.library.trimAsTextBlock
 import java.time.Duration
 import java.time.temporal.Temporal
 import java.util.Date
@@ -51,13 +53,13 @@ class KeywordParameterDescriptor(val param: KParameter) {
 
   val documentation: String by lazy {
     val typeName = type.simpleName
-    val desc = annotation.doc.trim()
+    val desc = annotation.doc.trim().ifNotBlank { " ${ it.trim() }" }
     val defVal = if (null == default) {
       ""
     } else {
-      "\n\tDEFAULT: `$default`"
+      "(_DEFAULT_: `$default`) "
     }
-    return@lazy "$name [$typeName] $desc$defVal".trim()
+    return@lazy "$name $defVal[$typeName]$desc".trim()
   }
 
   val robotArgumentDescriptor by lazy {
@@ -78,18 +80,19 @@ class KeywordParameterDescriptor(val param: KParameter) {
   init {
     // for technical reasons we can not support varargs
     if (param.isVararg) {
-      throw IllegalArgumentException(
-        "Parameter $name is a vararg-parameter, which is not supported! " +
-          "Use List-type and mark it with 'KwdArg.kind = VARARG' to solve this."
+      throw IllegalArgumentException("""
+        Parameter $name is a vararg-parameter, which is not supported! \
+        Use List-type and mark it with 'KwdArg.kind = VARARG' to solve this.
+        """.trimAsTextBlock()
       )
     }
 
     if (ParameterKind.VARARG == kind) {
       // Type must be List-Compatible
       if (!type.isSubclassOf(List::class)) {
-        throw IllegalArgumentException(
-          "The parameter $name is marked as vararg but it's type is not a " +
-            "subclass of List!"
+        throw IllegalArgumentException("""
+          The parameter $name is marked as vararg, but its type is not a \
+          subclass of List!""".trimAsTextBlock()
         )
       }
     } else if (
@@ -99,9 +102,9 @@ class KeywordParameterDescriptor(val param: KParameter) {
           String::class == (_type.arguments.first().type!!.classifier as KClass<*>)
         )
     ) {
-      throw IllegalArgumentException(
-        "The parameter $name is marked as kwarg but it's type is not a " +
-          "subclass of Map or its key-type parameter is not String"
+      throw IllegalArgumentException("""
+        The parameter $name is marked as kwarg, but its type is not a \
+        subclass of Map or its key-type parameter is not String""".trimAsTextBlock()
       )
     } // no further else required VALUE has no restrictions (ATM ;) :P)
   }

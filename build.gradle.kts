@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 plugins {
-  java
+  `java-library`
 
   kotlin("jvm") apply false
   kotlin("plugin.spring") apply false

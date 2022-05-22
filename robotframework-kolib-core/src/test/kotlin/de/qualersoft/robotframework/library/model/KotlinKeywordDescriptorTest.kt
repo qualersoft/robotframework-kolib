@@ -34,9 +34,9 @@ class KotlinKeywordDescriptorTest {
     assertAll(
       { desc.name shouldBe "simpleFunctionOneArg" },
       {
-        desc.description shouldBe """*Parameters*:
-        |- test [String]
-      """.trimMargin()
+        desc.description shouldBe """*Parameters*
+          |
+          |test [String]""".trimMargin()
       },
       { desc.robotArguments should haveSize(1) },
       { desc.robotArguments.first() should haveSize(1) }
@@ -301,40 +301,26 @@ class KotlinKeywordDescriptorTest {
     fun docuFactory(): Stream<Arguments> = Stream.of(
       Arguments.of("noDoc", ""),
       Arguments.of(
-        "singleLineSummary", """*Summary*:
-        |
-        |Single line""".trimMargin()
+        "singleLineSummary", "Single line"
       ),
       Arguments.of(
-        "multiLineSummary", """*Summary*:
-        |
-        |First line second line""".trimMargin()
+        "multiLineSummary", """First line second line"""
       ),
       Arguments.of(
-        "multiLineSummaryWithEmptyLine", """*Summary*:
-        |
-        |First line third line""".trimMargin()
+        "multiLineSummaryWithEmptyLine", "First line third line"
       ),
       Arguments.of(
-        "multiLineSummaryWithEmptySpacedLine", """*Summary*:
-        |
-        |First line after ws line""".trimMargin()
+        "multiLineSummaryWithEmptySpacedLine", "First line after ws line"
       ),
       Arguments.of(
-        "singleDetailsLine", """*Details*:
-        |
-        |First line""".trimMargin()
+        "singleDetailsLine", "First line"
       ),
       Arguments.of(
-        "multiDetailsLine", """*Details*:
-        |
-        |First line
+        "multiDetailsLine", """First line
         |Second line""".trimMargin()
       ),
       Arguments.of(
-        "multiDetailsLineWithEmptyLine", """*Details*:
-        |
-        |First line
+        "multiDetailsLineWithEmptyLine", """First line
         |
         |Third line""".trimMargin()
       )

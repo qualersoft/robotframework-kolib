@@ -22,5 +22,4 @@ public class JExampleLib extends RobotLib {
   }
 
   public static final String ROBOT_LIBRARY_SCOPE = "GLOBAL";
-  public static final String ROBOT_LIBRARY_VERSION = "1.0.0";
 }
