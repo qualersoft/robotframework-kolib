@@ -29,9 +29,32 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
   private val parameters: List<KeywordParameterDescriptor>
 
   val description: String by lazy {
-    """${normalizeSummary(annotation.docSummary)}
-    ${createDetailsDescription(annotation.docDetails)}
-    ${createParameterDoc()}""".trim()
+    val summary = normalizeSummary(annotation.docSummary)
+    val details = createDetailsDescription(annotation.docDetails)
+    val result = StringBuilder(summary)
+    if(details.isNotBlank()) {
+      if (summary.isNotBlank()) {
+        result.append("\n\n")
+      }
+      result.append(details)
+    }
+    val params = createParameterDoc()
+    if (params.isNotBlank()) {
+      if (result.isNotBlank()) {
+        result.append("\n\n")
+      }
+      result.append(params)
+    }
+    return@lazy result.toString()
+  }
+
+  /**
+   * List of [tags][Keyword.tags] present on the keyword.
+   * 
+   * Note: Respects [Keyword.tags] requirements.
+   */
+  val tags by lazy { 
+    annotation.tags.map { it.value.trim().replace(Regex("\\s+"), " ") }.filter { it.isNotBlank() }
   }
 
   init {
@@ -62,15 +85,15 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
         "bool"
       }
       originType == String::class -> {
-        "str"
+        "str()"
       }
       originType == Date::class || originType.isSubclassOf(Temporal::class) -> {
-        "datetime"
+        "datetime.datetime"
       }
       originType == Duration::class -> {
         "timedelta"
       }
-      originType == ByteArray::class -> {
+      (originType == ByteArray::class) -> {
         "bytearray"
       }
       else -> originType
@@ -289,18 +312,12 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
   }
 
   private fun normalizeSummary(summary: Array<String>): String {
-    return summary.map { it.trim() }.filter { it.isNotEmpty() }.joinToString(" ").let {
-      if (it.isNotBlank()) {
-        "*Summary*:\n\n$it\n"
-      } else {
-        ""
-      }
-    }
+    return summary.map { it.trim() }.filter { it.isNotEmpty() }.joinToString(" ")
   }
 
   private fun createDetailsDescription(details: Array<String>): String {
     return if (details.isNotEmpty()) {
-      details.joinToString("\n", prefix = "\n*Details*:\n\n") { it.trim() }
+      details.joinToString("\n")
     } else {
       ""
     }
@@ -308,9 +325,7 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
 
   private fun createParameterDoc() =
     if (parameters.isNotEmpty()) {
-      "\n*Parameters*:\n" + parameters.joinToString(
-        "\n- ", prefix = "- "
-      ) { it.documentation }
+      "*Parameters*\n\n" + parameters.joinToString("\n\n") { it.documentation.trim() }
     } else {
       ""
     }

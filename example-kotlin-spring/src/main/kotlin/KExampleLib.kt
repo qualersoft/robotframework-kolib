@@ -9,6 +9,5 @@ open class KExampleLib(vararg args: String) : RobotLib(TaMarker::class, *args) {
 
   companion object {
     const val ROBOT_LIBRARY_SCOPE: String = "GLOBAL"
-    const val ROBOT_LIBRARY_VERSION: String = "1.0.0"
   }
 }

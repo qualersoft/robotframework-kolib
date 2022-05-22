@@ -20,15 +20,14 @@ class BooleanConverterTest {
 
   @ParameterizedTest
   @MethodSource("generateInvalidData")
-  fun testInvalidConversion(value: Any, expectedMsgs: List<String>) {
+  fun testInvalidConversion(value: Any, expectedErrorMsgParts: List<String>) {
     val ex = assertThrows<IllegalArgumentException> {
       BooleanConverter.convertToBoolean(value)
     }
 
-    assertAll(expectedMsgs.map {
+    assertAll(expectedErrorMsgParts.map {
       { ex.message shouldContain it }
     })
-    
   }
 
   @Suppress("unused")
@@ -76,10 +75,22 @@ class BooleanConverterTest {
 
     @JvmStatic
     fun generateInvalidData(): Stream<Arguments> = Stream.of(
-      arg("nop", listOf("Unable to convert String <nop>", "Valid values for `true` are", "'yes'", "and for `false` are", "'no'")),
-      arg("yup", listOf("Unable to convert String <yup>", "Valid values for `true` are", "'yes'", "and for `false` are", "'no'")),
-      arg("doh", listOf("Unable to convert String <doh>", "Valid values for `true` are", "'yes'", "and for `false` are", "'no'")),
-      arg("ja", listOf("Unable to convert String <ja>", "Valid values for `true` are", "'yes'", "and for `false` are", "'no'")),
+      arg(
+        "nop",
+        listOf("Unable to convert String <nop>", "Valid values for `true` are", "'yes'", "and for `false` are", "'no'")
+      ),
+      arg(
+        "yup",
+        listOf("Unable to convert String <yup>", "Valid values for `true` are", "'yes'", "and for `false` are", "'no'")
+      ),
+      arg(
+        "doh",
+        listOf("Unable to convert String <doh>", "Valid values for `true` are", "'yes'", "and for `false` are", "'no'")
+      ),
+      arg(
+        "ja",
+        listOf("Unable to convert String <ja>", "Valid values for `true` are", "'yes'", "and for `false` are", "'no'")
+      ),
 
       // yep, this should be handled earlier and not in converter
       arg(true, listOf("Unexpected type for value <true>", "Only Numbers", "some Strings"))

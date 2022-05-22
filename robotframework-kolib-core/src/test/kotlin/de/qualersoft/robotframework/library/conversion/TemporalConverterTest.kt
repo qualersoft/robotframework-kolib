@@ -66,7 +66,6 @@ class TemporalConverterTest {
   }
 
   companion object {
-    @Suppress("unused")
     @JvmStatic
     fun dateProvider(): Stream<Arguments> = Stream.of(
       args(

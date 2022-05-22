@@ -52,6 +52,8 @@ data class CountryTDO(
       listOf("AUT", "BEL", "CZE", "DNK", "FRA", "LUX", "NLD", "POL", "CHE"),
       listOf(CurrencyTDO.EURO)
     ).build()
+
+    val NOOP = Builder().build()
   }
 }
 
@@ -78,5 +80,6 @@ data class CurrencyTDO(
 
   companion object {
     val EURO = Builder("EUR", "Euro", "€").build()
+    val NOOP = Builder()
   }
 }
