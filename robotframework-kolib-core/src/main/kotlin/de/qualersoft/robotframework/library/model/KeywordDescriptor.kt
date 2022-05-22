@@ -50,11 +50,11 @@ open class KeywordDescriptor(private val function: KFunction<*>) {
 
   /**
    * List of [tags][Keyword.tags] present on the keyword.
-   *
-   * **Remark**: All whitespaces will be folded to a single space!
+   * 
+   * Note: Respects [Keyword.tags] requirements.
    */
   val tags by lazy { 
-    annotation.tags.map { it.value.replace(Regex("\\s+"), " ") }
+    annotation.tags.map { it.value.trim().replace(Regex("\\s+"), " ") }.filter { it.isNotBlank() }
   }
 
   init {

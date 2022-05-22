@@ -53,7 +53,7 @@ class KeywordParameterDescriptor(val param: KParameter) {
 
   val documentation: String by lazy {
     val typeName = type.simpleName
-    val desc = annotation.doc.trim().ifNotBlank { " ${ it.trim() }" }
+    val desc = annotation.doc.trim().ifNotBlank { " $it" }
     val defVal = if (null == default) {
       ""
     } else {

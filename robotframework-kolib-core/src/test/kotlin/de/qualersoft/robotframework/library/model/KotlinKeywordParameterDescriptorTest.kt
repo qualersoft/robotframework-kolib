@@ -181,6 +181,13 @@ class KotlinKeywordParameterDescriptorTest {
     val descriptor = KeywordParameterDescriptor(param)
     descriptor.documentation shouldBe "test (_DEFAULT_: ` `) [String] A test value"
   }
+
+  @Test
+  fun testRobotDescriptorKeywordArgsWithBlankDoc() {
+    val param = getParameterOf<AnnotatedFunctionsHolderClass>("withBlankDoc")
+    val descriptor = KeywordParameterDescriptor(param)
+    descriptor.documentation shouldBe "test [String]"
+  }
   //</editor-fold>
 
   //<editor-fold desc="Robot descriptor generation">
@@ -310,6 +317,8 @@ class KotlinKeywordParameterDescriptorTest {
     fun withDocuAndDefault(@KwdArg(doc = "A test value", default = "empty") test: String = "empty") {}
     fun withDocuAndEmptyDefault(@KwdArg(doc = "A test value", default = "") test: String = "") {}
     fun withDocuAndBlankDefault(@KwdArg(doc = "A test value", default = " ") test: String = " ") {}
+
+    fun withBlankDoc(@KwdArg(doc = " ")test: String) { }
 
     fun withAnnotationButNotKwdArgs(@JavaTimeConversionPattern("") test: String) {}
   }

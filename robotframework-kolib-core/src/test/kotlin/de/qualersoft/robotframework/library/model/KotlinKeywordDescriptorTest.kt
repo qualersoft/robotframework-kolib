@@ -1,9 +1,11 @@
 package de.qualersoft.robotframework.library.model
 
 import de.qualersoft.robotframework.library.annotation.Keyword
+import de.qualersoft.robotframework.library.annotation.KeywordTag
 import de.qualersoft.robotframework.library.annotation.KwdArg
 import de.qualersoft.robotframework.library.conversion.PyObjUtil
 import io.kotest.matchers.collections.haveSize
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.beNull
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -212,6 +214,13 @@ class KotlinKeywordDescriptorTest {
     desc.description shouldBe expected
   }
 
+  @ParameterizedTest(name = "[{index}] {0}")
+  @MethodSource("tagFactory")
+  fun testTags(fncName: String, expectedTags: List<String>) {
+    val desc = getDescriptor<FunctionsHolderClass>(fncName)
+    desc.tags shouldContainExactlyInAnyOrder expectedTags
+  }
+
   //<editor-fold desc="function access and discoverability">
   @Test
   fun testPrivateFunThrows() {
@@ -323,7 +332,49 @@ class KotlinKeywordDescriptorTest {
         "multiDetailsLineWithEmptyLine", """First line
         |
         |Third line""".trimMargin()
+      ),
+      Arguments.of(
+        "summaryAndDetails", """I'm the summary
+          |
+          |I'm the details""".trimMargin()
+      ),
+      Arguments.of(
+        "summaryAndArgs", """Just a summary
+          |
+          |*Parameters*
+          |
+          |age [Int]
+        """.trimMargin()
+      ),
+      Arguments.of(
+        "detailsAndArgs", """Just details
+          |
+          |*Parameters*
+          |
+          |age [Int]
+        """.trimMargin()
+      ),
+      Arguments.of(
+        "summaryDetailsAndArgs", """I'm the summary
+          |
+          |I'm the details
+          |
+          |*Parameters*
+          |
+          |age [Int]
+        """.trimMargin()
       )
+    )
+
+    @JvmStatic
+    fun tagFactory(): Stream<Arguments> = Stream.of(
+      Arguments.of("simpleFunctionOneArg", emptyList<String>()),
+      Arguments.of("singleTag", listOf("A TAG")),
+      Arguments.of("tagWithSpaceNormalization", listOf("I M A TAG")),
+      Arguments.of("multipleTags", listOf("T1", "T2", "T3")),
+      Arguments.of("withEmptyTag", listOf("Some Tag")),
+      Arguments.of("withBlankTags", listOf("Another tag")),
+      Arguments.of("tagWithSurroundingSpaces", listOf("I have surrounding whitespaces"))
     )
   }
 
@@ -407,6 +458,27 @@ class KotlinKeywordDescriptorTest {
     fun nativeTypeOther(test: FunctionsHolderClass) {
     }
     //</editor-fold>
+
+    @Keyword(tags = [KeywordTag("A TAG")])
+    fun singleTag() {
+    }
+
+    @Keyword(tags = [KeywordTag("I  M\tA\t  TAG")])
+    fun tagWithSpaceNormalization() {
+    }
+
+    @Keyword(tags = [KeywordTag("T1"), KeywordTag("T2"), KeywordTag("T3")])
+    fun multipleTags() {
+    }
+    
+    @Keyword(tags = [KeywordTag("Some Tag"), KeywordTag("")])
+    fun withEmptyTag() {}
+
+    @Keyword(tags = [KeywordTag("Another tag"), KeywordTag(" "), KeywordTag("\t")])
+    fun withBlankTags() {}
+
+    @Keyword(tags = [KeywordTag("  I have surrounding whitespaces\t")])
+    fun tagWithSurroundingSpaces() {}
   }
 
   @Suppress("unused")
@@ -494,6 +566,32 @@ class KotlinKeywordDescriptorTest {
 
     @Keyword(docDetails = ["First line", "", "Third line"])
     fun multiDetailsLineWithEmptyLine() {
+    }
+
+    @Keyword(
+      docSummary = ["I'm the summary"],
+      docDetails = ["I'm the details"]
+    )
+    fun summaryAndDetails() {
+    }
+
+    @Keyword(
+      docSummary = ["Just a summary"]
+    )
+    fun summaryAndArgs(age: Int) {
+    }
+
+    @Keyword(
+      docDetails = ["Just details"]
+    )
+    fun detailsAndArgs(age: Int) {
+    }
+
+    @Keyword(
+      docSummary = ["I'm the summary"],
+      docDetails = ["I'm the details"]
+    )
+    fun summaryDetailsAndArgs(age: Int) {
     }
   }
 

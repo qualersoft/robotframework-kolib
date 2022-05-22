@@ -11,18 +11,18 @@ package de.qualersoft.robotframework.library.annotation
  *    Meaning, any consecutive whitespaces are folded to a single space.
  *
  * **Note on documentation of a keyword**
- * 
+ *
  * This library implements the following pattern:
- * 
+ *
  * [docSummary]?&nbsp;&lt;optParagraph&gt;&nbsp;[docDetails]?&nbsp;&lt;optParagraph&gt;&nbsp;[argumentsDoc][KwdArg]
- * 
+ *
  * _&lt;optParagraph&gt;_: We automatically insert two linebreaks between each none-empty block, resulting
  * in a new paragraph.
- * 
+ *
  * **Remarks**:
  *
  * The implementation provided by this library use the here mentioned defaults for all the arguments.
- * 
+ *
  * The use of these arguments as well as the here descript behavior, lies with the implementing library.
  * Implementing libraries **must explicitly** indicate deviations from the behavior described here.
  */
@@ -53,6 +53,10 @@ annotation class Keyword(
 
   /**
    * List of tags present by default onto the keyword
+   *
+   * *Remarks*:
+   *  - Leading and trailing whitespaces will be removed.
+   *  - All consecutive whitespaces will be folded to a single space!
    */
   val tags: Array<KeywordTag> = []
 )
