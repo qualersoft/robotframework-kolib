@@ -29,11 +29,12 @@ repositories {
   mavenCentral()
 }
 
+val rfSrcRoot = "src/test/robots"
 sourceSets {
   java {
     test {
       resources {
-        srcDirs("src/test/robots")
+        srcDirs(rfSrcRoot)
       }
     }
   }
@@ -73,17 +74,17 @@ tasks {
   }
 
   register<TestdocTask>("testdocDemo") {
-    sources = files("src/test/robots/suites")
+    sources = files("$rfSrcRoot/suites")
   }
 
   register<RunRobotTask>("debug") {
     robot {
       include = mutableListOf("Debug")
     }
-    sources = files("src/test/robots/suites")
+    sources = files("$rfSrcRoot/suites")
   }
   register<RunRobotTask>("runTests") {
-    sources = files("src/test/robots/suites")
+    sources = files("$rfSrcRoot/suites")
   }
   withType<RunRobotTask>().configureEach {
     dependsOn(jar)
