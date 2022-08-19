@@ -50,7 +50,7 @@ allprojects {
 
       dependency(group = "javax.inject", name = "javax.inject", version = "1")
       dependency(group = "javax.annotation", name = "javax.annotation-api", version = "1.3.2")
-      dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.7.0")
+      dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.7.1")
 
       dependency(group = "org.json", name = "json", version = "20220320")
       dependencySet(group = "io.kotest", version = "4.6.0") {
@@ -95,7 +95,7 @@ subprojects {
   apply(plugin = "signing")
 
   jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = "0.8.8"
   }
 
   dependencies {
