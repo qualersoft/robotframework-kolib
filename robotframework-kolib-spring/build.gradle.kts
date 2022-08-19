@@ -15,7 +15,7 @@ dependencies {
   implementation(kotlin("reflect"))
 
   implementation(group = "org.springframework.boot", name = "spring-boot-starter-logging")
-  implementation(group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.0.0")
+  implementation(group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.1.1")
   api(group = "org.springframework.boot", name = "spring-boot")
 
   listOf("kotest-runner-junit5-jvm", "kotest-assertions-core").forEach {
