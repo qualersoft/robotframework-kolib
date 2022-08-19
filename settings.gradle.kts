@@ -11,7 +11,7 @@ pluginManagement {
 
     // spring
     id("org.springframework.boot") version "2.6.7"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
+    id("io.spring.dependency-management") version "1.0.13.RELEASE"
 
     // quality
     id("io.gitlab.arturbosch.detekt") version "1.20.0"
