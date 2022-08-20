@@ -19,7 +19,7 @@ plugins {
   `maven-publish`
   signing
 
-  id("com.github.ben-manes.versions") version "0.39.0"
+  id("com.github.ben-manes.versions") version "0.42.0"
 
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
