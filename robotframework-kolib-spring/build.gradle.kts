@@ -22,7 +22,7 @@ dependencies {
     testImplementation(group = "io.kotest", name = it)
   }
 
-  testImplementation(group = "org.yaml", name = "snakeyaml", version = "1.30")
+  testImplementation(group = "org.yaml", name = "snakeyaml", version = "1.31")
 
   testImplementation(group = "ch.qos.logback", name = "logback-classic")
   testImplementation(group = "javax.annotation", name = "javax.annotation-api", version = "1.3.2")
