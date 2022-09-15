@@ -23,10 +23,16 @@ plugins {
 
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
+
+  id("org.owasp.dependencycheck") version "7.2.0"
 }
 
 jacoco {
   toolVersion = "0.8.8"
+}
+
+dependencyCheck {
+  suppressionFile = file("etc").resolve("suppression.xml").path
 }
 
 allprojects {
