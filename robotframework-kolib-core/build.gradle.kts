@@ -6,13 +6,13 @@ plugins {
 
 dependencies {
   implementation(kotlin("reflect"))
-  compileOnly(group = "org.python", name = "jython-slim", version = "2.7.2")
+  compileOnly(group = "org.python", name = "jython-slim", version = "2.7.3")
 
   listOf("kotest-runner-junit5-jvm", "kotest-assertions-core").forEach {
     testImplementation(group = "io.kotest", name = it)
   }
 
-  testImplementation(group = "org.python", name = "jython-slim", version = "2.7.2")
+  testImplementation(group = "org.python", name = "jython-slim", version = "2.7.3")
   testImplementation(platform("org.junit:junit-bom:5.9.0"))
   testImplementation(group = "org.junit.jupiter", name = "junit-jupiter")
 }
