@@ -48,7 +48,7 @@ dependencies {
   implementation(project(":example-core"))
   implementation(project(":robotframework-kolib-spring"))
 
-  implementation(group = "org.yaml", name = "snakeyaml", version = "1.32")
+  implementation(group = "org.yaml", name = "snakeyaml", version = "1.33")
 
   implementation(group = "org.assertj", name = "assertj-core", version = "3.23.1")
 }
