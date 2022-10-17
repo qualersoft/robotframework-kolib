@@ -19,7 +19,7 @@ plugins {
   `maven-publish`
   signing
 
-  id("com.github.ben-manes.versions") version "0.42.0"
+  id("com.github.ben-manes.versions") version "0.43.0"
 
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
@@ -60,7 +60,7 @@ allprojects {
       dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.7.3")
 
       dependency(group = "org.json", name = "json", version = "20220924")
-      dependencySet(group = "io.kotest", version = "4.6.0") {
+      dependencySet(group = "io.kotest", version = "5.5.1") {
         entry("kotest-runner-junit5-jvm")
         entry("kotest-assertions-core-jvm")
         entry("kotest-property-jvm")
@@ -70,11 +70,11 @@ allprojects {
 
       dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.11")
 
-      dependencySet(group = "org.springframework", version = "5.3.20") {
+      dependencySet(group = "org.springframework", version = "5.3.23") {
         entry("spring-web")
         entry("spring-context")
       }
-      dependencySet(group = "org.springframework.boot", version = "2.6.7") {
+      dependencySet(group = "org.springframework.boot", version = "2.7.4") {
         entry("spring-boot")
         entry("spring-boot-starter-logging")
       }
