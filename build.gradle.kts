@@ -2,6 +2,7 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import io.spring.gradle.dependencymanagement.dsl.DependencySetHandler
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.owasp.dependencycheck.gradle.extension.AnalyzerExtension
 import java.util.Properties
 
 plugins {
@@ -24,7 +25,7 @@ plugins {
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
 
-  id("org.owasp.dependencycheck") version "7.2.1"
+  id("org.owasp.dependencycheck") version "7.3.0"
 }
 
 jacoco {
@@ -33,6 +34,9 @@ jacoco {
 
 dependencyCheck {
   suppressionFile = file("etc").resolve("suppression.xml").path
+  analyzers(closureOf<AnalyzerExtension> {
+    assemblyEnabled = false
+  })
 }
 
 allprojects {
