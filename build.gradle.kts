@@ -23,7 +23,7 @@ plugins {
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
 
-  id("org.owasp.dependencycheck") version "7.3.2"
+  id("org.owasp.dependencycheck") version "7.4.4"
 }
 
 jacoco {
