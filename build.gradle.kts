@@ -3,7 +3,7 @@ import io.spring.gradle.dependencymanagement.dsl.DependencySetHandler
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.owasp.dependencycheck.gradle.extension.AnalyzerExtension
-import java.util.Properties
+import java.util.*
 
 plugins {
   `java-library`
@@ -14,7 +14,7 @@ plugins {
   id("org.springframework.boot") apply false
   id("io.spring.dependency-management")
 
-  id("io.gitlab.arturbosch.detekt") apply false
+  id("io.gitlab.arturbosch.detekt")
   jacoco
 
   `maven-publish`
@@ -23,7 +23,7 @@ plugins {
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
 
-  id("org.owasp.dependencycheck") version "7.3.2"
+  id("org.owasp.dependencycheck") version "7.4.4"
 }
 
 jacoco {
@@ -62,7 +62,7 @@ allprojects {
       dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.7.3")
 
       dependency(group = "org.json", name = "json", version = "20220924")
-      dependencySet(group = "io.kotest", version = "5.5.1") {
+      dependencySet(group = "io.kotest", version = "5.5.4") {
         entry("kotest-runner-junit5-jvm")
         entry("kotest-assertions-core-jvm")
         entry("kotest-property-jvm")
@@ -72,17 +72,17 @@ allprojects {
 
       dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.11")
 
-      dependencySet(group = "org.springframework", version = "5.3.23") {
+      dependencySet(group = "org.springframework", version = "5.3.25") {
         entry("spring-web")
         entry("spring-context")
       }
-      dependencySet(group = "org.springframework.boot", version = "2.7.4") {
+      dependencySet(group = "org.springframework.boot", version = "2.7.8") {
         entry("spring-boot")
         entry("spring-boot-starter-logging")
       }
 
       // add groovy to allow spring bean definition in groovy-style
-      dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.13")
+      dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.14")
     }
   }
 }
@@ -109,12 +109,21 @@ subprojects {
 
   dependencies {
     implementation(group = "ch.qos.logback", name = "logback-classic")
+
+    detektPlugins(group="io.gitlab.arturbosch.detekt", name="detekt-rules-libraries", version = detekt.toolVersion)
   }
 
   configure<DetektExtension> {
     allRules = true
     config = files("$rootDir/detekt.yml")
     source = files("src/main/kotlin")
+  }
+
+  val javaVersion = JavaVersion.VERSION_11
+  javaToolchains {
+    compilerFor {
+      languageVersion.set(JavaLanguageVersion.of(javaVersion.majorVersion))
+    }
   }
 
   tasks.withType<io.gitlab.arturbosch.detekt.Detekt>().configureEach {
@@ -130,11 +139,10 @@ subprojects {
     finalizedBy(tasks.withType<JacocoReport>())
   }
 
-  val javaVersion = JavaVersion.VERSION_11
   tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-      jvmTarget = javaVersion.toString()
-      apiVersion = "1.6"
+    compilerOptions {
+      jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(javaVersion.majorVersion))
+      apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_8)
     }
   }
 

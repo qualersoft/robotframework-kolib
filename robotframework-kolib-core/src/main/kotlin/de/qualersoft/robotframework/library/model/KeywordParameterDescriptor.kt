@@ -80,6 +80,7 @@ class KeywordParameterDescriptor(val param: KParameter) {
   init {
     // for technical reasons we can not support varargs
     if (param.isVararg) {
+      @Suppress("TrimMultilineRawString")
       throw IllegalArgumentException("""
         Parameter $name is a vararg-parameter, which is not supported! \
         Use List-type and mark it with 'KwdArg.kind = VARARG' to solve this.
@@ -90,6 +91,7 @@ class KeywordParameterDescriptor(val param: KParameter) {
     if (ParameterKind.VARARG == kind) {
       // Type must be List-Compatible
       if (!type.isSubclassOf(List::class)) {
+        @Suppress("TrimMultilineRawString")
         throw IllegalArgumentException("""
           The parameter $name is marked as vararg, but its type is not a \
           subclass of List!""".trimAsTextBlock()
@@ -102,6 +104,7 @@ class KeywordParameterDescriptor(val param: KParameter) {
           String::class == (_type.arguments.first().type!!.classifier as KClass<*>)
         )
     ) {
+      @Suppress("TrimMultilineRawString")
       throw IllegalArgumentException("""
         The parameter $name is marked as kwarg, but its type is not a \
         subclass of Map or its key-type parameter is not String""".trimAsTextBlock()

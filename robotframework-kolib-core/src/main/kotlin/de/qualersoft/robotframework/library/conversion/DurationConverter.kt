@@ -60,6 +60,7 @@ object DurationConverter {
   /**
    * Factor to convert seconds fraction part to nanoseconds (OneBillion).
    */
+  @Suppress("MagicNumber")
   private val SECONDS_FRACTION_TO_NANO_FACTOR = BigDecimal(1e9)
 
   /**
