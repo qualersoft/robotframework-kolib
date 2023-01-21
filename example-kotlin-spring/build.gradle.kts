@@ -50,7 +50,7 @@ dependencies {
 
   implementation(group = "org.yaml", name = "snakeyaml", version = "1.33")
 
-  implementation(group = "org.assertj", name = "assertj-core", version = "3.23.1")
+  implementation(group = "org.assertj", name = "assertj-core", version = "3.24.2")
 }
 
 tasks {
