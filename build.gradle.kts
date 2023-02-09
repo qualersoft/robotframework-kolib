@@ -82,7 +82,7 @@ allprojects {
       }
 
       // add groovy to allow spring bean definition in groovy-style
-      dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.14")
+      dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.15")
     }
   }
 }
