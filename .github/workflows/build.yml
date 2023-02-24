@@ -30,7 +30,7 @@ jobs:
 
       - name: "Gradle cache"
         id: gradle-cache
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: |
             ~/.gradle/wrapper/dists/**
@@ -38,7 +38,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-${{ secrets.GRADLE_CACHE_VERSION }}-
 
       - name: "Workspace cache"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-sources-${{ github.run_id }}
@@ -64,13 +64,13 @@ jobs:
           java-version: '17'
 
       - name: "Load sources"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-sources-${{ github.run_id }}
 
       - name: "Load gradle cache"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: |
             ~/.gradle/wrapper/dists/**
@@ -92,7 +92,7 @@ jobs:
           java-version: '17'
 
       - name: "Load sources"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-sources-${{ github.run_id }}
@@ -113,20 +113,20 @@ jobs:
           java-version: '17'
 
       - name: "Load sources"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-sources-${{ github.run_id }}
 
       - name: "Load gradle cache"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: |
             ~/.gradle/wrapper/dists/**
           key: ${{ runner.os }}-gradle-${{ secrets.GRADLE_CACHE_VERSION }}-${{ hashFiles('./*.gradle', './*.gradle.kts', './gradle.properties') }}
           restore-keys: ${{ runner.os }}-gradle-${{ secrets.GRADLE_CACHE_VERSION }}-
 
-      - uses: actions/cache@v3.2.5
+      - uses: actions/cache@v3.2.6
         with:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-compile-${{ github.run_id }}
@@ -145,13 +145,13 @@ jobs:
           java-version: '17'
 
       - name: "Load compile cache"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-compile-${{ github.run_id }}
 
       - name: "Load gradle cache"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: |
             ~/.gradle/wrapper/dists/**
@@ -159,7 +159,7 @@ jobs:
           restore-keys: ${{ runner.os }}-gradle-${{ secrets.GRADLE_CACHE_VERSION }}-
 
       - name: "Unit test cache"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-test-${{ github.run_id }}
@@ -174,7 +174,7 @@ jobs:
       - staticFossaCheck
     steps:
       - name: "Load sources"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-sources-${{ github.run_id }}
@@ -191,7 +191,7 @@ jobs:
     if: ${{ !cancelled() }}
     steps:
       - name: "Load test cache"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-test-${{ github.run_id }}
@@ -214,13 +214,13 @@ jobs:
           java-version: '17'
 
       - name: "Load compile cache"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: ${{ github.workspace }}/**
           key: ${{ runner.os }}-compile-${{ github.run_id }}
 
       - name: "Load gradle cache"
-        uses: actions/cache@v3.2.5
+        uses: actions/cache@v3.2.6
         with:
           path: |
             ~/.gradle/wrapper/dists/**
