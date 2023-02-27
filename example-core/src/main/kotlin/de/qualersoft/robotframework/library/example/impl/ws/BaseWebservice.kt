@@ -11,11 +11,11 @@ import java.net.URI
 abstract class BaseWebservice {
 
   private val template = RestTemplate()
-  protected var response: ResponseEntity<String>? = null
+  protected var response: ResponseEntity<String?>? = null
     private set
 
   /**
-   * Gets the url the request shall be send to.
+   * Gets the url the request shall be sent to.
    *
    * The url may contain path-parameter pattern in the form `{key}` but must not contain query-parameters!
    *
@@ -42,7 +42,7 @@ abstract class BaseWebservice {
   open fun getPathParameters(): Map<String, String>? = null
 
   /**
-   * Gets the queryparameter.
+   * Gets the query-parameter.
    *
    * Defaults to `null`.
    */
