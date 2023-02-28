@@ -23,7 +23,7 @@ plugins {
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
 
-  id("org.owasp.dependencycheck") version "8.1.0"
+  id("org.owasp.dependencycheck") version "8.1.2"
 }
 
 jacoco {
@@ -35,6 +35,8 @@ dependencyCheck {
   analyzers(closureOf<AnalyzerExtension> {
     assemblyEnabled = false
   })
+  formats.addAll(listOf("HTML", "XML", "SARIF"))
+  outputDirectory = buildDir.resolve("reports/dependency-check").path
 }
 
 allprojects {
