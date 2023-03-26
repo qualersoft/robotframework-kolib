@@ -23,7 +23,7 @@ plugins {
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
 
-  id("org.owasp.dependencycheck") version "8.1.2"
+  id("org.owasp.dependencycheck") version "8.2.1"
 }
 
 jacoco {
@@ -74,17 +74,17 @@ allprojects {
 
       dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.11")
 
-      dependencySet(group = "org.springframework", version = "5.3.25") {
+      dependencySet(group = "org.springframework", version = "5.3.26") {
         entry("spring-web")
         entry("spring-context")
       }
-      dependencySet(group = "org.springframework.boot", version = "2.7.9") {
+      dependencySet(group = "org.springframework.boot", version = "2.7.10") {
         entry("spring-boot")
         entry("spring-boot-starter-logging")
       }
 
       // add groovy to allow spring bean definition in groovy-style
-      dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.15")
+      dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.16")
     }
   }
 }
