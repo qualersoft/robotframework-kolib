@@ -64,7 +64,7 @@ allprojects {
       dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.7.3")
 
       dependency(group = "org.json", name = "json", version = "20230227")
-      dependencySet(group = "io.kotest", version = "5.5.5") {
+      dependencySet(group = "io.kotest", version = "5.6.2") {
         entry("kotest-runner-junit5-jvm")
         entry("kotest-assertions-core-jvm")
         entry("kotest-property-jvm")
