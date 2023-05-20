@@ -26,8 +26,9 @@ plugins {
   id("org.owasp.dependencycheck") version "8.2.1"
 }
 
+val jacocoToolVersion = "0.8.8"
 jacoco {
-  toolVersion = "0.8.8"
+  toolVersion = jacocoToolVersion
 }
 
 dependencyCheck {
@@ -64,7 +65,7 @@ allprojects {
       dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.7.3")
 
       dependency(group = "org.json", name = "json", version = "20230227")
-      dependencySet(group = "io.kotest", version = "5.5.5") {
+      dependencySet(group = "io.kotest", version = "5.6.2") {
         entry("kotest-runner-junit5-jvm")
         entry("kotest-assertions-core-jvm")
         entry("kotest-property-jvm")
@@ -78,7 +79,7 @@ allprojects {
         entry("spring-web")
         entry("spring-context")
       }
-      dependencySet(group = "org.springframework.boot", version = "2.7.10") {
+      dependencySet(group = "org.springframework.boot", version = "2.7.12") {
         entry("spring-boot")
         entry("spring-boot-starter-logging")
       }
@@ -106,7 +107,7 @@ subprojects {
   apply(plugin = "signing")
 
   jacoco {
-    toolVersion = "0.8.8"
+    toolVersion = jacocoToolVersion
   }
 
   dependencies {
@@ -138,6 +139,7 @@ subprojects {
 
   tasks.withType<Test> {
     useJUnitPlatform()
+    outputs.upToDateWhen { false }
     finalizedBy(tasks.withType<JacocoReport>())
   }
 
