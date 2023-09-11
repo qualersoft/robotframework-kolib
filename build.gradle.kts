@@ -37,7 +37,7 @@ dependencyCheck {
     assemblyEnabled = false
   })
   formats.addAll(listOf("HTML", "XML", "SARIF"))
-  outputDirectory = buildDir.resolve("reports/dependency-check").path
+  outputDirectory = layout.buildDirectory.dir("reports/dependency-check").get().asFile.path
 }
 
 allprojects {
@@ -52,7 +52,7 @@ allprojects {
 
   dependencyManagement {
     dependencies {
-      fun dependency(group: String, name: String, version: String) = this.dependency(
+      fun dependency(group: String, name: String, version: String) = dependency(
         mapOf("group" to group, "name" to name, "version" to version)
       )
 
@@ -85,7 +85,7 @@ allprojects {
       }
 
       // add groovy to allow spring bean definition in groovy-style
-      dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.16")
+      dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.19")
     }
   }
 }
@@ -118,8 +118,8 @@ subprojects {
 
   configure<DetektExtension> {
     allRules = true
-    config = files("$rootDir/detekt.yml")
-    source = files("src/main/kotlin")
+    config.from(rootDir.resolve("detekt.yml"))
+    source.setFrom("src/main/kotlin")
   }
 
   val javaVersion = JavaVersion.VERSION_11

@@ -281,7 +281,6 @@ naming:
   BooleanPropertyNaming:
     active: false
     allowedPattern: '^(is|has|are)'
-    ignoreOverridden: true
   ClassNaming:
     active: true
     excludes: [ '**/*test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt' ]
@@ -292,7 +291,6 @@ naming:
     parameterPattern: '[a-z][A-Za-z0-9]*'
     privateParameterPattern: '[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'
-    ignoreOverridden: true
   EnumNaming:
     active: true
     excludes: [ '**/*test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt' ]
@@ -314,13 +312,11 @@ naming:
     excludes: [ '**/*test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt' ]
     functionPattern: '[a-z][a-zA-Z0-9]*'
     excludeClassPattern: '$^'
-    ignoreOverridden: true
   FunctionParameterNaming:
     active: true
     excludes: [ '**/*test/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt' ]
     parameterPattern: '[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'
-    ignoreOverridden: true
   InvalidPackageDeclaration:
     active: false
     rootPackage: ''
@@ -368,7 +364,6 @@ naming:
     variablePattern: '[a-z][A-Za-z0-9]*'
     privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'
-    ignoreOverridden: true
 
 performance:
   active: true
@@ -475,6 +470,18 @@ potential-bugs:
 
 style:
   active: true
+  # Deprecated but required
+  OptionalWhenBraces:
+    active: false
+  BracesOnIfStatements:
+    active: true
+    singleLine: 'never'
+    multiLine: 'always'
+  BracesOnWhenStatements:
+    # disabled because still buggy
+    active: false
+    singleLine: 'never'
+    multiLine: 'always'
   CanBeNonNullable:
     active: false
   ClassOrdering:
@@ -502,12 +509,14 @@ style:
     includeLineWrapping: false
   ForbiddenComment:
     active: true
-    values:
-      - 'FIXME:'
-      - 'STOPSHIP:'
-      - 'TODO:'
+    comments:
+      - value: 'FIXME:'
+        reason: 'Forbidden FIXME marker in comment, please fix the problem.'
+      - value: 'TODO:'
+        reason: 'Forbidden TODO marker in comment, please do the changes.'
+      - value: 'STOPSHIP:'
+        reason: 'Forbidden STOPSHIP marker in comment, please address the problem before shipping the code.'
     allowedPatterns: ''
-    customMessage: ''
   ForbiddenImport:
     active: false
     imports: [ ]
@@ -549,8 +558,6 @@ style:
     ignoreEnums: false
     ignoreRanges: false
     ignoreExtensionFunctions: true
-  MandatoryBracesIfStatements:
-    active: true
   MandatoryBracesLoops:
     active: true
   MaxLineLength:
@@ -565,6 +572,9 @@ style:
     active: true
   MultilineLambdaItParameter:
     active: false
+  MultilineRawStringIndentation:
+    active: true
+    indentSize: 2
   NestedClassesVisibility:
     active: true
   NewLineAtEndOfFile:
@@ -576,8 +586,6 @@ style:
   OptionalAbstractKeyword:
     active: true
   OptionalUnit:
-    active: false
-  OptionalWhenBraces:
     active: false
   PreferToOverPairSyntax:
     active: false

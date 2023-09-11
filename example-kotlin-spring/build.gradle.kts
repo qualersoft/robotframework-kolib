@@ -58,7 +58,7 @@ tasks {
   register<LibdocTask>("libdoc${libName}Html") {
     dependsOn(jar)
     libdoc {
-      outputDirectory.set(buildDir.resolve("doc/libdoc/lib"))
+      outputDirectory.set(layout.buildDirectory.dir("doc/libdoc/lib"))
       outputFile.set(file("$libName.html"))
       libraryOrResourceFile = libName
     }
@@ -66,7 +66,7 @@ tasks {
   register<LibdocTask>("libdoc${libName}Libsepc") {
     dependsOn(jar)
     libdoc {
-      outputDirectory.set(buildDir.resolve("doc/libdoc/lib"))
+      outputDirectory.set(layout.buildDirectory.dir("doc/libdoc/lib"))
       outputFile.set(file("$libName.libspec"))
 
       libraryOrResourceFile = libName
