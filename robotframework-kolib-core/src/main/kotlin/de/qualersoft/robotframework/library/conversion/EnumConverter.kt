@@ -22,8 +22,8 @@ object EnumConverter {
     if (1 < candidates.size) {
       // we are going for exact case-insensitive match
       val msg = """
-          |Unable to cast value '$value' to enum '${targetType.simpleName}' because multiple candidates found!
-          |Please specify enum exact or consider renaming your enums. Valid values are: $enums.
+        |Unable to cast value '$value' to enum '${targetType.simpleName}' because multiple candidates found!
+        |Please specify enum exact or consider renaming your enums. Valid values are: $enums.
       """.trimMargin()
       candidates = candidates.filter { it.name.equals(value.toString(), true) }
       if (candidates.isEmpty()) {

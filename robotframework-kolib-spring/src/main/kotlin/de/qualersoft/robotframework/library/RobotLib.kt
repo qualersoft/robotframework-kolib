@@ -55,9 +55,7 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
       val path = root.java.getResource("${root.java.simpleName}.class")?.path?.let {
         it.substring(it.indexOf(':') + 1, it.indexOf('!'))
       }
-      if (null == path) {
-        null
-      } else {
+      path?.let {
         val jarFilePath = URLDecoder.decode(path, StandardCharsets.UTF_8)
         File(jarFilePath)
       }
