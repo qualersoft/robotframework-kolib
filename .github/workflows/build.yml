@@ -16,7 +16,7 @@ jobs:
       branch: ${{ steps.extract_branch.outputs.branch }}
     steps:
       - name: "setup java"
-        uses: actions/setup-java@v3.11.0
+        uses: actions/setup-java@v3.12.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -58,7 +58,7 @@ jobs:
     needs: init
     steps:
       - name: "setup java"
-        uses: actions/setup-java@v3.11.0
+        uses: actions/setup-java@v3.12.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -86,7 +86,7 @@ jobs:
     needs: init
     steps:
       - name: "setup java"
-        uses: actions/setup-java@v3.11.0
+        uses: actions/setup-java@v3.12.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -107,7 +107,7 @@ jobs:
     needs: init
     steps:
       - name: "setup java"
-        uses: actions/setup-java@v3.11.0
+        uses: actions/setup-java@v3.12.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -139,7 +139,7 @@ jobs:
     needs: compile
     steps:
       - name: "setup java"
-        uses: actions/setup-java@v3.11.0
+        uses: actions/setup-java@v3.12.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -208,7 +208,7 @@ jobs:
     if: (needs.init.outputs.branch == 'develop') && success()
     steps:
       - name: "setup java"
-        uses: actions/setup-java@v3.11.0
+        uses: actions/setup-java@v3.12.0
         with:
           distribution: 'temurin'
           java-version: '17'
