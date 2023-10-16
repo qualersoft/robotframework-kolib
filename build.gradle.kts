@@ -26,7 +26,7 @@ plugins {
   id("org.owasp.dependencycheck") version "8.2.1"
 }
 
-val jacocoToolVersion = "0.8.8"
+val jacocoToolVersion = "0.8.11"
 jacoco {
   toolVersion = jacocoToolVersion
 }
