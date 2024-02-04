@@ -23,7 +23,7 @@ plugins {
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
 
-  id("org.owasp.dependencycheck") version "8.2.1"
+  id("org.owasp.dependencycheck") version "8.4.3"
 }
 
 val jacocoToolVersion = "0.8.8"
