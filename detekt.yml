@@ -470,15 +470,12 @@ potential-bugs:
 
 style:
   active: true
-  # Deprecated but required
-  OptionalWhenBraces:
-    active: false
   BracesOnIfStatements:
     active: true
     singleLine: 'never'
     multiLine: 'always'
   BracesOnWhenStatements:
-    # disabled because still buggy
+    # FIXME disabled because still buggy
     active: false
     singleLine: 'never'
     multiLine: 'always'

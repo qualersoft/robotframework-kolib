@@ -6,10 +6,10 @@ import de.qualersoft.robotframework.library.example.impl.ws.restcountries.WsCoun
 import de.qualersoft.robotframework.library.example.impl.ws.restcountries.WsRestCountriesBase
 import de.qualersoft.robotframework.library.annotation.Keyword
 import de.qualersoft.robotframework.library.example.impl.config.CountriesApiProperties
-import javax.annotation.ManagedBean
+import jakarta.inject.Named
 
-@ManagedBean
-class WsCountriesEu(private val countryProps: CountriesApiProperties) {
+@Named
+open class WsCountriesEu(private val countryProps: CountriesApiProperties) {
 
   @Keyword
   fun getCountriesByName(name: String) = WsCountriesByName(countryProps).also {

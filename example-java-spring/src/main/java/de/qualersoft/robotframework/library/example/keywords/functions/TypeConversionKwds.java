@@ -2,7 +2,8 @@ package de.qualersoft.robotframework.library.example.keywords.functions;
 
 import de.qualersoft.robotframework.library.annotation.Keyword;
 
-import javax.annotation.ManagedBean;
+import jakarta.inject.Named;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Duration;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@ManagedBean
+@Named
 public class TypeConversionKwds {
 
   //<editor-fold desc="Description">

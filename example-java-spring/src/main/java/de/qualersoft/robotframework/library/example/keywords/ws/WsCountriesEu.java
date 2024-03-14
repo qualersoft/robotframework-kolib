@@ -9,10 +9,11 @@ import de.qualersoft.robotframework.library.example.impl.ws.restcountries.WsRest
 import de.qualersoft.robotframework.library.annotation.Keyword;
 import de.qualersoft.robotframework.library.example.impl.config.CountriesApiProperties;
 
-import javax.annotation.ManagedBean;
+import jakarta.inject.Named;
+
 import java.util.List;
 
-@ManagedBean
+@Named
 public class WsCountriesEu {
 
   private final CountriesApiProperties countryProps;

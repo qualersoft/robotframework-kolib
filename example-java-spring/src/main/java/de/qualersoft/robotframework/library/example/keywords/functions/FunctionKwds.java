@@ -3,14 +3,12 @@ package de.qualersoft.robotframework.library.example.keywords.functions;
 import de.qualersoft.robotframework.library.annotation.Keyword;
 import de.qualersoft.robotframework.library.annotation.KwdArg;
 import de.qualersoft.robotframework.library.model.ParameterKind;
-
-import javax.annotation.ManagedBean;
-import javax.annotation.Nullable;
+import jakarta.inject.Named;
 
 import java.util.List;
 import java.util.Map;
 
-@ManagedBean
+@Named
 public class FunctionKwds {
 
   @Keyword

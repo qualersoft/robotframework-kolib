@@ -55,11 +55,14 @@ abstract class BaseWebservice {
    */
   open fun getRequestBody(): String? = null
 
+  open fun getHeaders():MultiValueMap<String, String>? = null
+
   fun send() {
     val url = buildRequestUrl()
     val method = getRequestMethod()
     val body = getRequestBody()
-    val request = HttpEntity<String?>(body)
+    val headers = getHeaders()
+    val request = HttpEntity(body, headers)
     response = template.exchange(url, method, request, String::class.java)
   }
 

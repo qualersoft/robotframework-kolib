@@ -4,7 +4,7 @@ plugins {
   kotlin("jvm")
 }
 
-val javaVersion = JavaVersion.VERSION_11
+val javaVersion = JavaVersion.VERSION_21
 java {
   sourceCompatibility = javaVersion
   targetCompatibility = javaVersion

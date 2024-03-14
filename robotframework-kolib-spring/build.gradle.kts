@@ -10,23 +10,28 @@ dependencies {
   api(project(":robotframework-kolib-core"))
 
   // add groovy to allow spring bean definition in groovy-style
-  compileOnly(group = "org.codehaus.groovy", name = "groovy")
+  compileOnly(group = "org.apache.groovy", name = "groovy")
 
   implementation(kotlin("reflect"))
 
   implementation(group = "org.springframework.boot", name = "spring-boot-starter-logging")
-  implementation(group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.1.1")
+  implementation(group = "jakarta.inject", name = "jakarta.inject-api")
+  implementation(group = "jakarta.annotation", name = "jakarta.annotation-api")
   api(group = "org.springframework.boot", name = "spring-boot")
 
   listOf("kotest-runner-junit5-jvm", "kotest-assertions-core").forEach {
     testImplementation(group = "io.kotest", name = it)
   }
 
-  testImplementation(group = "org.yaml", name = "snakeyaml", version = "1.33")
+  testImplementation(group = "org.yaml", name = "snakeyaml", version = "2.2")
 
   testImplementation(group = "ch.qos.logback", name = "logback-classic")
-  testImplementation(group = "javax.annotation", name = "javax.annotation-api", version = "1.3.2")
   testImplementation(group = "org.robotframework", name = "robotframework")
+  testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine")
+}
+
+tasks.compileTestJava {
+  this.options.compilerArgs = listOf("-parameters")
 }
 
 tasks.test {

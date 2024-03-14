@@ -1,17 +1,10 @@
 package de.qualersoft.robotframework.library
 
-import org.springframework.boot.SpringBootConfiguration
-import org.springframework.boot.context.TypeExcludeFilter
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.ComponentScan
-import org.springframework.context.annotation.FilterType
 
-@SpringBootConfiguration
-@ComponentScan(
-  excludeFilters = [
-    ComponentScan.Filter(
-      type = FilterType.CUSTOM,
-      classes = [TypeExcludeFilter::class]
-    )
-  ]
-)
+@EnableConfigurationProperties
+@ConfigurationPropertiesScan
+@ComponentScan
 annotation class SpringLibMarker

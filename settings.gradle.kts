@@ -1,5 +1,5 @@
 pluginManagement {
-  val kotlinVersion = "1.9.10"
+  val kotlinVersion = "1.9.23"
   repositories {
     gradlePluginPortal()
     mavenCentral()
@@ -10,16 +10,24 @@ pluginManagement {
     kotlin("plugin.spring") version kotlinVersion
 
     // spring
-    id("org.springframework.boot") version "2.7.15"
-    id("io.spring.dependency-management") version "1.1.0"
+    id("org.springframework.boot") version "3.2.3"
+    id("io.spring.dependency-management") version "1.1.4"
 
     // quality
-    id("io.gitlab.arturbosch.detekt") version "1.23.1"
+    id("io.gitlab.arturbosch.detekt") version "1.23.5"
 
     // documentation
-    id("org.jetbrains.dokka") version "1.9.0"
+    id("org.jetbrains.dokka") version "1.9.10"
     id("org.asciidoctor.jvm.convert") version "3.3.2"
   }
+}
+
+dependencyResolutionManagement {
+  @Suppress("UnstableApiUsage")
+  repositories {
+    mavenCentral()
+  }
+  rulesMode = RulesMode.FAIL_ON_PROJECT_RULES
 }
 
 include(

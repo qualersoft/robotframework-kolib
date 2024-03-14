@@ -3,10 +3,10 @@ package de.qualersoft.robotframework.library.example.keywords.functions
 import de.qualersoft.robotframework.library.annotation.Keyword
 import de.qualersoft.robotframework.library.annotation.KwdArg
 import de.qualersoft.robotframework.library.model.ParameterKind
-import javax.annotation.ManagedBean
+import jakarta.inject.Named
 
-@ManagedBean
-class FunctionKwds {
+@Named
+open class FunctionKwds {
 
   @Keyword
   fun fnCallWithVarargs(

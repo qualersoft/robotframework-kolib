@@ -18,10 +18,10 @@ import io.kotest.matchers.string.endWith
 import io.kotest.matchers.string.shouldBeEmpty
 import io.kotest.matchers.string.shouldNotStartWith
 import io.kotest.matchers.string.shouldStartWith
+import jakarta.inject.Named
 import org.junit.jupiter.api.assertAll
 import org.springframework.context.annotation.ComponentScan
 import java.io.File
-import javax.annotation.ManagedBean
 
 @ComponentScan(basePackageClasses = [RobotLibTest::class])
 class RobotLibTest : FreeSpec({
@@ -143,7 +143,7 @@ fun getLibTestKwdNames() = RobotLib(root = RobotLibTest::class).getKeywordNames(
 
 //<editor-fold desc="keyword discovery test classes">
 @Suppress("unused")
-@ManagedBean
+@Named
 open class KwdNameClass {
   @Keyword(name = "publicKeywordWithNameFromAnnotation")
   fun publicKeywordWithName() {
@@ -153,7 +153,7 @@ open class KwdNameClass {
 }
 
 @Suppress("unused")
-@ManagedBean
+@Named
 open class KwdFunctionNameClass {
   @Keyword
   fun publicKeywordFromFunction() {
@@ -161,7 +161,7 @@ open class KwdFunctionNameClass {
 }
 
 @Suppress("unused")
-@ManagedBean
+@Named
 open class ProtectedStuff {
   protected fun iAmProtected() {}
 
@@ -171,7 +171,7 @@ open class ProtectedStuff {
 }
 
 @Suppress("unused")
-@ManagedBean
+@Named
 open class PrivateStuff {
   private fun iAmPrivate() {}
 
@@ -181,7 +181,7 @@ open class PrivateStuff {
 }
 
 @Suppress("unused")
-@ManagedBean
+@Named
 open class NoBeanAtAll {
   private fun alsoNotIn() {}
   fun publicFunNotIn() {}
@@ -189,7 +189,7 @@ open class NoBeanAtAll {
 //</editor-fold>
 
 @Suppress("unused", "unused_parameter")
-@ManagedBean
+@Named
 open class KeywordArgs {
   @Keyword
   fun withAnnotatedArgsNoReturn(
@@ -227,7 +227,7 @@ open class KeywordArgs {
 }
 
 @Suppress("unused")
-@ManagedBean
+@Named
 open class KeywordDocumentation {
 
   @Keyword(docSummary = ["Just a single line"])

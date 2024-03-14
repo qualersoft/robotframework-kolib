@@ -3,6 +3,7 @@ import io.spring.gradle.dependencymanagement.dsl.DependencySetHandler
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.owasp.dependencycheck.gradle.extension.AnalyzerExtension
+import org.owasp.dependencycheck.gradle.extension.NvdExtension
 import java.util.*
 
 plugins {
@@ -23,19 +24,25 @@ plugins {
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
 
-  id("org.owasp.dependencycheck") version "8.2.1"
-}
-
-val jacocoToolVersion = "0.8.8"
-jacoco {
-  toolVersion = jacocoToolVersion
+  id("org.owasp.dependencycheck") version "9.0.9"
 }
 
 dependencyCheck {
   suppressionFile = file("etc").resolve("suppression.xml").path
+  val blackList = listOf("detekt", "jacoco", "archives", "dokka")
+  val inclusions = configurations.names
+    .filter { blackList.none { bl -> it.contains(bl, true) } }
+  scanConfigurations = inclusions
   analyzers(closureOf<AnalyzerExtension> {
     assemblyEnabled = false
   })
+  System.getenv().getOrDefault("NVD_API_KEY", findProperty("NVD_API_KEY"))?.also {
+    if ((it as String).isNotBlank()) {
+      nvd(closureOf<NvdExtension> {
+        apiKey = it
+      })
+    }
+  }
   formats.addAll(listOf("HTML", "XML", "SARIF"))
   outputDirectory = layout.buildDirectory.dir("reports/dependency-check").get().asFile.path
 }
@@ -46,11 +53,11 @@ allprojects {
 
   group = "io.github.qualersoft.robotframework"
 
-  repositories {
-    mavenCentral()
-  }
-
   dependencyManagement {
+    imports {
+      mavenBom("org.junit:junit-bom:5.10.2")
+    }
+
     dependencies {
       fun dependency(group: String, name: String, version: String) = dependency(
         mapOf("group" to group, "name" to name, "version" to version)
@@ -59,13 +66,13 @@ allprojects {
       fun dependencySet(group: String, version: String, action: ((DependencySetHandler).() -> Unit)) =
         dependencySet(mapOf("group" to group, "version" to version), action)
 
-      dependency(group = "javax.inject", name = "javax.inject", version = "1")
-      dependency(group = "javax.annotation", name = "javax.annotation-api", version = "1.3.2")
+      dependency(group = "jakarta.inject", name = "jakarta.inject-api", version = "2.0.1")
+      dependency(group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.1.1")
       // because we want to use JSR-305 annotations like `@Nullable`
-      dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.7.3")
+      dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.8.0")
 
-      dependency(group = "org.json", name = "json", version = "20230227")
-      dependencySet(group = "io.kotest", version = "5.6.2") {
+      dependency(group = "org.json", name = "json", version = "20231013")
+      dependencySet(group = "io.kotest", version = "5.8.1") {
         entry("kotest-runner-junit5-jvm")
         entry("kotest-assertions-core-jvm")
         entry("kotest-property-jvm")
@@ -73,19 +80,19 @@ allprojects {
 
       dependency(group = "org.robotframework", name = "robotframework", version = "4.1.2")
 
-      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.2.11")
+      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.5.3")
 
-      dependencySet(group = "org.springframework", version = "5.3.29") {
+      dependencySet(group = "org.springframework", version = "6.1.4") {
         entry("spring-web")
         entry("spring-context")
       }
-      dependencySet(group = "org.springframework.boot", version = "2.7.15") {
+      dependencySet(group = "org.springframework.boot", version = "3.2.3") {
         entry("spring-boot")
         entry("spring-boot-starter-logging")
       }
 
       // add groovy to allow spring bean definition in groovy-style
-      dependency(group = "org.codehaus.groovy", name = "groovy", version = "3.0.19")
+      dependency(group = "org.apache.groovy", name = "groovy", version = "4.0.15")
     }
   }
 }
@@ -106,14 +113,10 @@ subprojects {
   apply(plugin = "maven-publish")
   apply(plugin = "signing")
 
-  jacoco {
-    toolVersion = jacocoToolVersion
-  }
-
   dependencies {
     implementation(group = "ch.qos.logback", name = "logback-classic")
 
-    detektPlugins(group="io.gitlab.arturbosch.detekt", name="detekt-rules-libraries", version = detekt.toolVersion)
+    detektPlugins(group = "io.gitlab.arturbosch.detekt", name = "detekt-rules-libraries", version = detekt.toolVersion)
   }
 
   configure<DetektExtension> {
@@ -122,7 +125,7 @@ subprojects {
     source.setFrom("src/main/kotlin")
   }
 
-  val javaVersion = JavaVersion.VERSION_11
+  val javaVersion = JavaVersion.VERSION_21
   javaToolchains {
     compilerFor {
       languageVersion.set(JavaLanguageVersion.of(javaVersion.majorVersion))
@@ -146,7 +149,7 @@ subprojects {
   tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
       jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget(javaVersion.majorVersion))
-      apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_8)
+      apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9)
     }
   }
 
@@ -293,7 +296,7 @@ tasks.register("updateVersion") {
     var newVersion = project.findProperty("newVersion") as String?
       ?: throw IllegalArgumentException(
         "No `newVersion` specified!" +
-          " Usage: ./gradlew updateVersion -PnewVersion=<version>"
+            " Usage: ./gradlew updateVersion -PnewVersion=<version>"
       )
 
     if (newVersion.contains("snapshot", true)) {

@@ -63,14 +63,14 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
   }
 
   init {
-    log.debug("Initializing ${this::class.simpleName} with ${root.simpleName}")
+    log.atDebug().log("Initializing ${this::class.simpleName} with ${root.simpleName}")
     @SuppressWarnings("SpreadOperator")
     ctx = LibraryContext(*args, root = root).ctx
-    log.debug("${this::class} initialized ${root.simpleName}")
+    log.atDebug().log("{} initialized {}", this::class, root.simpleName)
   }
 
   /**
-   * Constructor that easily accepts java-classes with out the need of the user to deal with reflection stuff.
+   * Constructor that easily accepts java-classes without the need of the user to deal with reflection stuff.
    */
   @SuppressWarnings("SpreadOperator")
   constructor(root: Class<*>, vararg args: String) : this(Reflection.createKotlinClass(root), *args)
@@ -83,7 +83,7 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
   final override fun runKeyword(name: String, args: List<Any?>): Any? = null
 
   final override fun runKeyword(name: String, args: List<Any?>, kwArgs: Map<String, Any?>): Any? {
-    log.debug("Running keyword $name with args $args and kwArgs $kwArgs")
+    log.atDebug().log("Running keyword {} with args {} and kwArgs {}", name, args, kwArgs)
     val kwd = keyWords.getValue(name)
 
     val obj = ctx.getBean(kwd.declaringClass.java)
@@ -94,14 +94,14 @@ open class RobotLib(private val root: KClass<*>, vararg args: String) : MinimalD
   final override fun getKeywordArguments(name: String): List<List<Any?>> {
     val kwd = keyWords.getValue(name)
     val kwdArgs = kwd.robotArguments
-    log.debug("Calculated arguments for keyword '$name' are $kwdArgs")
+    log.atDebug().log("Calculated arguments for keyword '{}' are {}", name, kwdArgs)
     return kwdArgs
   }
 
   final override fun getKeywordTypes(name: String): Map<String, Any> {
     val kwd = keyWords.getValue(name)
     val argTypes = kwd.robotArgumentTypes
-    log.debug("Calculated argument types for keyword '$name' are $argTypes")
+    log.atDebug().log("Calculated argument types for keyword '{}' are {}", name, argTypes)
     return argTypes
   }
 

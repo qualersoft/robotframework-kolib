@@ -1,14 +1,14 @@
 package de.qualersoft.robotframework.library.example.keywords.functions
 
 import de.qualersoft.robotframework.library.annotation.Keyword
+import jakarta.inject.Named
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.time.Duration
 import java.time.LocalDateTime
-import javax.annotation.ManagedBean
 
-@ManagedBean
-class TypeConversionKwds {
+@Named
+open class TypeConversionKwds {
 
   //<editor-fold desc="Description">
   @Keyword
