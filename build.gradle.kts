@@ -71,7 +71,7 @@ allprojects {
       // because we want to use JSR-305 annotations like `@Nullable`
       dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.8.3")
 
-      dependency(group = "org.json", name = "json", version = "20231013")
+      dependency(group = "org.json", name = "json", version = "20240303")
       dependencySet(group = "io.kotest", version = "5.8.1") {
         entry("kotest-runner-junit5-jvm")
         entry("kotest-assertions-core-jvm")
