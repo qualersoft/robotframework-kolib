@@ -92,7 +92,7 @@ allprojects {
       }
 
       // add groovy to allow spring bean definition in groovy-style
-      dependency(group = "org.apache.groovy", name = "groovy", version = "4.0.15")
+      dependency(group = "org.apache.groovy", name = "groovy", version = "4.0.20")
     }
   }
 }
