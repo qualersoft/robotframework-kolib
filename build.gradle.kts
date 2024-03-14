@@ -69,7 +69,7 @@ allprojects {
       dependency(group = "jakarta.inject", name = "jakarta.inject-api", version = "2.0.1")
       dependency(group = "jakarta.annotation", name = "jakarta.annotation-api", version = "2.1.1")
       // because we want to use JSR-305 annotations like `@Nullable`
-      dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.8.0")
+      dependency(group = "com.github.spotbugs", name = "spotbugs-annotations", version = "4.8.3")
 
       dependency(group = "org.json", name = "json", version = "20231013")
       dependencySet(group = "io.kotest", version = "5.8.1") {
