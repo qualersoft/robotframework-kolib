@@ -82,7 +82,7 @@ allprojects {
 
       dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.5.3")
 
-      dependencySet(group = "org.springframework", version = "6.1.4") {
+      dependencySet(group = "org.springframework", version = "6.1.5") {
         entry("spring-web")
         entry("spring-context")
       }
