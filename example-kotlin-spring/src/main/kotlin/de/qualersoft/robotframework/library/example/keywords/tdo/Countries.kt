@@ -1,15 +1,14 @@
 package de.qualersoft.robotframework.library.example.keywords.tdo
 
-import de.qualersoft.robotframework.library.example.impl.tdo.CountryTDO
 import de.qualersoft.robotframework.library.annotation.Keyword
 import de.qualersoft.robotframework.library.annotation.KwdArg
+import de.qualersoft.robotframework.library.example.impl.tdo.CountryTDO
+import jakarta.inject.Named
 import org.assertj.core.api.Assertions.assertThat
-import java.lang.IllegalArgumentException
-import java.util.Locale
-import javax.annotation.ManagedBean
+import java.util.*
 
-@ManagedBean
-class Countries {
+@Named
+open class Countries {
 
   @Keyword(
     docSummary = ["Creates a default country for a given country code."],

@@ -6,9 +6,9 @@ import de.qualersoft.robotframework.library.annotation.Keyword;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.annotation.ManagedBean;
+import jakarta.inject.Named;
 
-@ManagedBean
+@Named
 public class WsCommons {
 
   @Keyword(

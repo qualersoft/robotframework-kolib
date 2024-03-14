@@ -1,10 +1,10 @@
 package de.qualersoft.robotframework.library.subpackage
 
 import de.qualersoft.robotframework.library.annotation.Keyword
-import javax.annotation.ManagedBean
+import jakarta.inject.Named
 
-@ManagedBean
-class SubkeywordClass {
+@Named
+open class SubkeywordClass {
 
   @Keyword
   fun subpackageFunction() {}

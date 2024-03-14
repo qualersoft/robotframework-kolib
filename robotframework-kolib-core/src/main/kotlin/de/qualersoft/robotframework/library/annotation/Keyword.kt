@@ -23,7 +23,7 @@ package de.qualersoft.robotframework.library.annotation
  *
  * The implementation provided by this library use the here mentioned defaults for all the arguments.
  *
- * The use of these arguments as well as the here descript behavior, lies with the implementing library.
+ * The use of these arguments as well as the here described behavior, lies with the implementing library.
  * Implementing libraries **must explicitly** indicate deviations from the behavior described here.
  */
 @Target(AnnotationTarget.FUNCTION)

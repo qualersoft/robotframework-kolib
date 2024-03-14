@@ -4,10 +4,10 @@ import de.qualersoft.robotframework.library.example.impl.ws.BaseWebservice
 import de.qualersoft.robotframework.library.annotation.Keyword
 import de.qualersoft.robotframework.library.annotation.KwdArg
 import org.assertj.core.api.Assertions.assertThat
-import javax.annotation.ManagedBean
+import jakarta.inject.Named
 
-@ManagedBean
-class WsCommons {
+@Named
+open class WsCommons {
 
   @Keyword(
     docSummary = ["Assert that a webservice request completed successfully."],

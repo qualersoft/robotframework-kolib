@@ -2,15 +2,15 @@ package de.qualersoft.robotframework.library.example.keywords.tdo;
 
 import de.qualersoft.robotframework.library.example.impl.tdo.CountryTDO;
 import de.qualersoft.robotframework.library.annotation.Keyword;
+import jakarta.inject.Named;
 
 import java.lang.IllegalArgumentException;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.ManagedBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ManagedBean
+@Named
 public class Countries {
 
   @Keyword

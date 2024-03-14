@@ -1,7 +1,7 @@
 package de.qualersoft.robotframework.library.example.impl.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
+import org.springframework.boot.context.properties.bind.ConstructorBinding
 
 @ConfigurationProperties("countries-api")
 data class CountriesApiProperties @ConstructorBinding constructor(val baseUrl: String, val version: String = "v3") {

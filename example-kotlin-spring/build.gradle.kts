@@ -9,7 +9,7 @@ plugins {
   id("de.qualersoft.robotframework") version "0.0.4"
 }
 
-val javaVersion = JavaVersion.VERSION_11
+val javaVersion = JavaVersion.VERSION_21
 java {
   sourceCompatibility = javaVersion
   targetCompatibility = javaVersion
@@ -41,14 +41,14 @@ sourceSets {
 }
 
 dependencies {
-  implementation(group = "javax.annotation", name = "javax.annotation-api")
+  implementation(group = "jakarta.inject", name = "jakarta.inject-api")
 
   implementation(group = "ch.qos.logback", name = "logback-classic")
 
   implementation(project(":example-core"))
   implementation(project(":robotframework-kolib-spring"))
 
-  implementation(group = "org.yaml", name = "snakeyaml", version = "2.0")
+  implementation(group = "org.yaml", name = "snakeyaml", version = "2.2")
 
   implementation(group = "org.assertj", name = "assertj-core", version = "3.24.2")
 }
