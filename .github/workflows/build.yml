@@ -202,7 +202,6 @@ jobs:
   publishSnapshot:
     runs-on: ubuntu-latest
     needs:
-      - init
       - report
       - licenceCheck
     if: (needs.init.outputs.branch == 'develop') && success()
