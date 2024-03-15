@@ -18,7 +18,7 @@ pluginManagement {
 
     // documentation
     id("org.jetbrains.dokka") version "1.9.20"
-    id("org.asciidoctor.jvm.convert") version "3.3.2"
+    id("org.asciidoctor.jvm.convert") version "4.0.2"
   }
 }
 
