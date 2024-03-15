@@ -9,7 +9,7 @@
       "description": "Keep major action updates as independent PR",
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": "major",
-      "prBodyNotes": ["[ ] Please check the release notes for deprecations and new features, and adopt them if applicable."]
+      "prBodyNotes": ["- [ ] Please check the release notes for deprecations and new features, and adopt them if applicable."]
     },
     {
       "description": "Put all non-major action updates in one PR",
@@ -35,7 +35,7 @@
       "matchPackagePatterns": ["^.+gradle[.-]plugin$"],
       "matchUpdateTypes": ["major"],
       "addLabels": ["t:plugin"],
-      "prBodyNotes": ["[ ] Please check the release notes for deprecations and new features, and adopt them if applicable."]
+      "prBodyNotes": ["- [ ] Please check the release notes for deprecations and new features, and adopt them if applicable."]
     }
   ],
   "github-actions": {
