@@ -14,7 +14,7 @@ pluginManagement {
     id("io.spring.dependency-management") version "1.1.4"
 
     // quality
-    id("io.gitlab.arturbosch.detekt") version "1.23.5"
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"
 
     // documentation
     id("org.jetbrains.dokka") version "1.9.20"
