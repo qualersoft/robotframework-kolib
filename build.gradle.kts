@@ -86,7 +86,7 @@ allprojects {
         entry("spring-web")
         entry("spring-context")
       }
-      dependencySet(group = "org.springframework.boot", version = "3.2.3") {
+      dependencySet(group = "org.springframework.boot", version = "3.2.4") {
         entry("spring-boot")
         entry("spring-boot-starter-logging")
       }
