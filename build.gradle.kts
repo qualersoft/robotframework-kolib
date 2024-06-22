@@ -80,7 +80,7 @@ allprojects {
 
       dependency(group = "org.robotframework", name = "robotframework", version = "4.1.2")
 
-      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.5.3")
+      dependency(group = "ch.qos.logback", name = "logback-classic", version = "1.5.6")
 
       dependencySet(group = "org.springframework", version = "6.1.5") {
         entry("spring-web")
