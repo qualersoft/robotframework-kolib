@@ -1,5 +1,5 @@
 pluginManagement {
-  val kotlinVersion = "1.9.23"
+  val kotlinVersion = "1.9.24"
   repositories {
     gradlePluginPortal()
     mavenCentral()
@@ -10,8 +10,8 @@ pluginManagement {
     kotlin("plugin.spring") version kotlinVersion
 
     // spring
-    id("org.springframework.boot") version "3.2.5"
-    id("io.spring.dependency-management") version "1.1.4"
+    id("org.springframework.boot") version "3.3.1"
+    id("io.spring.dependency-management") version "1.1.5"
 
     // quality
     id("io.gitlab.arturbosch.detekt") version "1.23.6"
