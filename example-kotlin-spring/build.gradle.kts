@@ -1,8 +1,8 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import de.qualersoft.robotframework.gradleplugin.tasks.BasicRobotFrameworkTask
 import de.qualersoft.robotframework.gradleplugin.tasks.RunRobotTask
 import de.qualersoft.robotframework.gradleplugin.tasks.LibdocTask
 import de.qualersoft.robotframework.gradleplugin.tasks.TestdocTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   kotlin("jvm")
@@ -13,6 +13,12 @@ val javaVersion = JavaVersion.VERSION_21
 java {
   sourceCompatibility = javaVersion
   targetCompatibility = javaVersion
+}
+
+kotlin {
+  compilerOptions {
+    jvmTarget = JvmTarget.fromTarget(javaVersion.toString())
+  }
 }
 
 robotframework {
@@ -102,11 +108,5 @@ tasks {
         "-Dpython.console.encoding=UTF-8"
       )
     )
-  }
-
-  withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-      jvmTarget = javaVersion.toString()
-    }
   }
 }

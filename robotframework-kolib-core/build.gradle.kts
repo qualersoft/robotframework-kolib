@@ -1,7 +1,11 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
   `java-library`
+}
+
+kotlin {
+  compilerOptions {
+    freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+  }
 }
 
 dependencies {
@@ -18,12 +22,6 @@ dependencies {
 }
 
 tasks {
-  withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-      freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    }
-  }
-
   test {
     useJUnitPlatform()
     testLogging {

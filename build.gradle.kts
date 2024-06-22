@@ -3,7 +3,6 @@ import io.spring.gradle.dependencymanagement.dsl.DependencySetHandler
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.owasp.dependencycheck.gradle.extension.AnalyzerExtension
-import org.owasp.dependencycheck.gradle.extension.NvdExtension
 import java.util.*
 
 plugins {
@@ -29,7 +28,7 @@ plugins {
 
 dependencyCheck {
   suppressionFile = file("etc").resolve("suppression.xml").path
-  val blackList = listOf("detekt", "jacoco", "archives", "dokka")
+  val blackList = listOf("detekt", "jacoco", "archives", "dokka", "asciidoctorj")
   val inclusions = configurations.names
     .filter { blackList.none { bl -> it.contains(bl, true) } }
   scanConfigurations = inclusions
@@ -38,9 +37,9 @@ dependencyCheck {
   })
   System.getenv().getOrDefault("NVD_API_KEY", findProperty("NVD_API_KEY"))?.also {
     if ((it as String).isNotBlank()) {
-      nvd(closureOf<NvdExtension> {
+      nvd.apply {
         apiKey = it
-      })
+      }
     }
   }
   formats.addAll(listOf("HTML", "XML", "SARIF"))

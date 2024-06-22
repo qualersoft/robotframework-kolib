@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
 
-    <suppress until="2024-06-01">
+    <suppress>
         <notes><![CDATA[
           file name: robotframework-4.1.2.jar (shaded: com.google.guava:guava:28.0-android)
           introduced by robotframework dependency
@@ -14,7 +14,7 @@
         <cve>CVE-2023-2976</cve>
     </suppress>
 
-    <suppress until="2024-06-01">
+    <suppress>
         <notes><![CDATA[
           file name: robotframework-4.1.2.jar (shaded: org.apache.commons:commons-compress:1.19)
           introduced by robotframework dependency
