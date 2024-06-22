@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   kotlin("jvm")
@@ -21,10 +21,8 @@ dependencies {
   implementation(group = "org.json", name = "json")
 }
 
-tasks {
-  withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-      jvmTarget = javaVersion.toString()
-    }
+kotlin {
+  compilerOptions {
+    jvmTarget = JvmTarget.fromTarget(javaVersion.toString())
   }
 }
