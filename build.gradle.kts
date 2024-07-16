@@ -23,7 +23,7 @@ plugins {
   id("org.jetbrains.dokka") apply false
   id("org.asciidoctor.jvm.convert")
 
-  id("org.owasp.dependencycheck") version "9.2.0"
+  id("org.owasp.dependencycheck") version "10.0.3"
 }
 
 dependencyCheck {
