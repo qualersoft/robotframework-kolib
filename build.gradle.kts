@@ -54,7 +54,7 @@ allprojects {
 
   dependencyManagement {
     imports {
-      mavenBom("org.junit:junit-bom:5.10.2")
+      mavenBom("org.junit:junit-bom:5.11.0")
     }
 
     dependencies {

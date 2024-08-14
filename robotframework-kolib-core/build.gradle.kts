@@ -17,7 +17,7 @@ dependencies {
   }
 
   testImplementation(group = "org.python", name = "jython-slim", version = "2.7.3")
-  testImplementation(platform("org.junit:junit-bom:5.10.2"))
+  testImplementation(platform("org.junit:junit-bom:5.11.0"))
   testImplementation(group = "org.junit.jupiter", name = "junit-jupiter")
 }
 
