@@ -12,7 +12,7 @@ jobs:
     name: "Craft a new release"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.0
 
       - name: Create release branch
         run: git checkout -b release/${{ github.event.inputs.target_version }}

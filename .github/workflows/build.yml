@@ -21,7 +21,7 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - uses: actions/checkout@v4.1.7
+      - uses: actions/checkout@v4.2.0
         id: checkout
 
       - name: "Extract branch name"
